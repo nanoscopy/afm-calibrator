@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Data viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+  
+  	<div class="container">
+		<div class="row">
+			<div class="col-sm-8">
+		 		<h1>{{title}}</h1>
+			</div>
+
+			<div class="col-sm-4" style="margin-top:20px">
+		 		
+		 		<a class="btn btn-danger pull-right"
+		 			href="javascript:void(0)"
+		 			onclick="closeWS()"
+		 			>
+		 			<span class="glyphicon glyphicon-pause"></span>
+		 		</a>
+		 		<a class="btn btn-success pull-right"
+		 			href="javascript:void(0)"
+		 			onclick="openWS()"
+		 			>
+		 			<span class="glyphicon glyphicon-play"></span>
+		 		</a>
+		 		
+			</div>
+			
+		</div>
+		<div class="row">
+			<div id="flot"
+				style="width: 100%;height: 400px"></div>
+		</div>
+		<div class="row">
+			<div class="col-sm-3">
+				<input type="text" id="downsampling" >
+			</div>
+			<div class="col-sm-3">
+				<input type="checkbox" id="fft"> FFT			
+			</div>
+			<div class="col-sm-3">
+				
+			</div>
+			<div class="col-sm-3">
+				
+			</div>
+		</div>
+		  	
+  	</div>
+  	
+  	<script>
+		var d1 = {{data}};
+
+		var options={
+				downsampling : 1,
+				xmin: 0,
+				xmax: {{xmax}},
+				fft : false
+				};
+		
+	</script>
+    
+    <script src="/static/js/jquery-1.10.2.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/flot/jquery.flot.min.js"></script>
+    <script src="/static/flot/jquery.flot.navigate.min.js"></script>
+    <script src="/static/flot/jquery.flot.selection.min.js"></script>
+    <script src="/static/js/underscore-min.js"></script>
+    <script src="/static/js/app.js"></script>
+  </body>
+</html>
