@@ -1,5 +1,10 @@
 #!/usr/bin/python
 
+try:
+    import numpy, scipy, pyaudio, tornado
+except ImportError:
+    print "numpy, scipy, pyaudio and tornado are required to run the calibrator"
+
 import signal, sys, threading
 
 

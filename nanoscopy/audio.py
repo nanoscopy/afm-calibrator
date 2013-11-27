@@ -1,8 +1,6 @@
 import pyaudio
 import struct
 from threading import Thread, Condition
-import time
-from logging import thread
 import socket
 
 CHUNK = 2**10
