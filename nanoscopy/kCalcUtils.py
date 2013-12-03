@@ -86,7 +86,7 @@ def initFit(NI,Spectrum):
     return PWstart,PdcStart,niRstart,Qstart
 
     
-def GETparams(NI, T, Spectrum):
+def GETparams(NI, Spectrum, T = None):
     
     # Calcolo dei parametri, necessari per determinare il valore di k, tramite il fit dello spettro 
     # di densita' di potenza
@@ -97,7 +97,10 @@ def GETparams(NI, T, Spectrum):
     
     PW,Pdc,niR,Q = fitResult[0]
     
-    Qtrue = GETQtrue(niR,1/T,Q)
+    # Questa scelta e' stata aggiunta per permettere di utilizzare o il valore misurato di Q (affetto da problemi riguardanti la risoluzione 
+    # finita in frequenza dello spettro) o quello corretto (vedere funzione sottostante)
+    if T is not None: Qtrue = GETQtrue(niR,1/T,Q) # T e' la durata totale (in secondi) della misura
+    else: Qtrue = Q
     
     return PW,Pdc,niR,Qtrue
     
