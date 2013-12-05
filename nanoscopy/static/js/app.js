@@ -46,14 +46,19 @@ $('#flot').bind("plotunselected", function (event, ranges) {
 });
 
 var plot = $.plot("#flot", [d1], {
-			xaxis: {transform:  function(v) {return Math.log(v+0.0001); /*move away from zero*/} , tickDecimals: 3 ,
-				inverseTransorm: function(v) {return Math.}
+			xaxis: {transform:  function(v) {
+					if ($('#fft').is(':checked')) return Math.log(v+0.0001); /*move away from zero*/
+					else return v;
+				} , tickDecimals: 3 ,
 				tickFormatter: function (v, axis) {return "10" + (Math.round( Math.log(v)/Math.LN10)).toString().sup();}
                 },
 			selection: {
 				mode: "x"
 			},
-			yaxis: {transform:  function(v) {return Math.log(v+0.0001); /*move away from zero*/} , tickDecimals: 20 ,
+			yaxis: {transform:  function(v) {
+					if ($('#fft').is(':checked')) return Math.log(v+0.0001); /*move away from zero*/
+					else return v;
+				} , tickDecimals: 20 ,
 				tickFormatter: function (v, axis) {return "10" + (Math.round( Math.log(v)/Math.LN10)).toString().sup();}
                 }
 		}

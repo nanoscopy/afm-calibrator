@@ -21,6 +21,8 @@ b = 35*(10**-6) # Valori di default per prova
 
 L = 350*(10**-6) # Valori di default per prova
 
+port = 8888
+
 
 class SocketHandler(websocket.WebSocketHandler):
     
@@ -67,7 +69,7 @@ class SocketHandler(websocket.WebSocketHandler):
             if self.d2:
                 d.append(self.d2)
             
-            message = {'kc':self.niR,'data':d}
+            message = {'niR':self.niR,'kc':self.kc,'data':d}
             
             try:  
                 self.write_message(message)
@@ -123,19 +125,19 @@ class MainHandler(tornado.web.RequestHandler):
                     title="Audio data", 
                     data = data,
                     xmax = CHUNK*2,
-                    kc = 0)
+                    kc = 0,
+                    niR = 0)
 
-application = tornado.web.Application([
+def start():
+    application = tornado.web.Application([
         (r"/", MainHandler),
         (r'/ws', SocketHandler),
-        (r"/static/(.*)", StaticFileHandler, {'path':'./static'})
-        ], 
-    debug=True)
-
-
-if __name__ == "__main__":
-    application.listen(8888)
+        (r"/static/(.*)", StaticFileHandler, {'path':'nanoscopy/static'})
+        ])
+    application.listen(port)
     ar.start()
     ar.play()
-    
     tornado.ioloop.IOLoop.instance().start()
+def stop():
+    ar.stop()
+    tornado.ioloop.IOLoop.instance().stop()
