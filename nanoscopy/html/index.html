@@ -43,7 +43,7 @@
 				<input type="checkbox" id="fft"> FFT			
 			</div>
 			<div class="col-sm-3">
-				
+				<input type="text" id="kCalc" >
 			</div>
 			<div class="col-sm-3">
 				
@@ -56,11 +56,13 @@
 		var d1 = {{data}};
 
 		var options={
-				downsampling : 1,
+				downsampling : 10,
 				xmin: 0,
 				xmax: {{xmax}},
 				fft : false
 				};
+				
+		var kc = {{kc}}
 		
 	</script>
     
