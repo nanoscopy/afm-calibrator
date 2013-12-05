@@ -25,7 +25,7 @@ threading.Thread(target=tornado_server.start).start()
 
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
-#signal.signal(signal.SIGHUP, signal_handler)
+signal.signal(signal.SIGHUP, signal_handler)
 
 print 'Running on port %d' % tornado_server.port
 print 'Press Ctrl+C to stop'

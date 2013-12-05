@@ -49,7 +49,7 @@ class SocketHandler(websocket.WebSocketHandler):
             if self.fft:
                 if self.acqCount == self.acqCountMax:
                     self.acqCount = 0
-                    self.dataSum = np.zeros(CHUNK*2)
+                    self.dataSum = np.zeros(CHUNK*2)+0.0001
                 data = abs(fft(data))**2
                 self.dataSum += data
                 self.acqCount += 1
@@ -59,7 +59,7 @@ class SocketHandler(websocket.WebSocketHandler):
                 self.d2 = []
                 self.niR,self.kc,self.d2 = self.work_on_d(data)
                 self.acqCount = 0
-                self.dataSum = np.zeros(CHUNK*2)
+                self.dataSum = np.zeros(CHUNK*2)+0.0001
             
             if self.downsampling > 1:
                 data = data[::self.downsampling]
@@ -122,7 +122,7 @@ class MainHandler(tornado.web.RequestHandler):
     def get(self):
         data = [list(a) for a in zip(r,linspace(-5e+4,5e+12,CHUNK*2))]
         self.render("html/index.html", 
-                    title="Audio data", 
+                    title="k Web Calibrator", 
                     data = data,
                     xmax = CHUNK*2,
                     kc = 0,
