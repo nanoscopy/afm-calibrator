@@ -34,11 +34,12 @@ class SocketHandler(websocket.WebSocketHandler):
             data2 = kcu.PRF(NI[self.xmin:self.xmax:self.downsampling],Pw,Pdc,niR,Q)
         
             kcCalc = kcu.GETk(self.ro,self.b,self.L,Q,niR,kcu.etaAria)
-            
+
         except:
             data2 = np.zeros(len(data))
-            kcCalc = 0
-            niR = NI[self.xmin]
+            kcCalc = 'Nan'
+            niR = 'Nan'
+            Q = 'Nan'
         
         return Q,niR,kcCalc,[list(a) for a in zip(r[self.xmin:self.xmax:self.downsampling],data2)]
     

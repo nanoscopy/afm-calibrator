@@ -5,7 +5,9 @@ try:
 except ImportError:
     print "numpy, scipy, pyaudio and tornado are required to run the calibrator"
 
-import signal, sys, threading
+import signal, sys, threading, platform, time
+
+
 
 
 from nanoscopy import tornado_server
@@ -14,19 +16,35 @@ try:
     tornado_server.port=int(sys.argv[1])
 except:
     pass
- 
-def signal_handler(signal, frame):
-        print 'exiting'
-        tornado_server.stop()
-        sys.exit(0)
         
 threading.Thread(target=tornado_server.start).start()
 
+if platform.system()=='Windows':
+    
+    c='c'
+    try:
+        print 'Running on port %d' % tornado_server.port
+        print 'Press Ctrl+C to stop'
+        while c != 'x':
+            c = raw_input()
+        tornado_server.stop()
+        sys.exit()
+    except Exception, e:
+        print e
+        tornado_server.stop()
+        sys.exit(0)
 
-signal.signal(signal.SIGINT, signal_handler)
-signal.signal(signal.SIGTERM, signal_handler)
-signal.signal(signal.SIGHUP, signal_handler)
+else:
+    
+    def signal_handler(signal, frame):
+        print 'exiting'
+        tornado_server.stop()
+        sys.exit(0)
 
-print 'Running on port %d' % tornado_server.port
-print 'Press Ctrl+C to stop'
-signal.pause()
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGHUP, signal_handler)
+    
+    print 'Running on port %d' % tornado_server.port
+    print 'Press Ctrl+C to stop'
+    signal.pause()
