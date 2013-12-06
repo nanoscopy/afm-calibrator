@@ -101,7 +101,7 @@ class SocketHandler(websocket.WebSocketHandler):
     def open(self):
         ar.listeners.append(self.data_listener)
         self.working = False
-        self.downsampling = 10
+        self.downsampling = 20
         self.fft = False
         self.xmin = 0
         self.xmax = CHUNK*2

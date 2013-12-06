@@ -34,7 +34,7 @@ function openWS(){
 		}
 		$('#kCalc').val(msg.kc);
 		$('#niR').val(msg.niR);
-	},40);
+	},160);
 }
 	
 function closeWS(){
@@ -73,7 +73,7 @@ var plot = $.plot("#flot", [d1], {
 					else return v;
 				}
 			},
-			selection: {
+		selection: {
 				mode: "x"
 			},
 		yaxis: {transform:  function(v) {
@@ -89,7 +89,11 @@ var plot = $.plot("#flot", [d1], {
 					if ($('#fft').is(':checked')) return "10" + (Math.round( mioLog(v))).toString().sup();
 					else return v;
 				}
-		}
+			},
+		
+		points: {show: false, radius: 1, shadowSize: 0},
+		lines: {show: true, shadowSize: 0},
+		shadowSize: 0
 	}
 );
 
