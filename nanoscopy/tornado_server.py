@@ -105,7 +105,7 @@ class SocketHandler(websocket.WebSocketHandler):
         self.fft = False
         self.xmin = 0
         self.xmax = CHUNK*2
-        self.acqCountMax = 100
+        self.acqCountMax = 25
         self.acqCount = 0
         self.d2 = []
         self.kc = 0

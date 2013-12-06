@@ -13,8 +13,8 @@ function openWS(){
 		msg = JSON.parse(evt.data);
 		if (options.fft)
 		{
+			plot.getOptions().xaxes[0].ticks = [0.01,0.1,1,10,100,1000,1e+4];
 			plot.getOptions().yaxes[0].ticks = [1,10,100,1000,1e+4,1e+5,1e+6,1e+7,1e+8,1e+9,1e+10,1e+11,1e+12,1e+13,1e+14,1e+14];
-			plot.getOptions().xaxes[0].ticks = [1,10,100,1000,1e+4];
 			plot.getOptions().yaxes[0].min = 0.001;
 			plot.getOptions().yaxes[0].max = 1e+14;
 			plot.setData(msg.data);
@@ -23,7 +23,7 @@ function openWS(){
 		}
 		else
 		{
-			var max = 8192;
+			var max = xmax;
 			plot.getOptions().xaxes[0].ticks = [0, max/10, 2*max/10, 2*max/10, 3*max/10, 4*max/10, 5*max/10, 6*max/10, 7*max/10, 8*max/10, 9*max/10];
 			plot.getOptions().yaxes[0].ticks = [-30000,-20000,-10000,0,10000,20000,30000];
 			plot.getOptions().yaxes[0].min = -33000;
@@ -59,7 +59,7 @@ $('#flot').bind("plotunselected", function (event, ranges) {
 
 var plot = $.plot("#flot", [d1], {
 		xaxis: {transform:  function(v) {
-					if ($('#fft').is(':checked')) return mioLog(v); /*move away from zero*/
+					if ($('#fft').is(':checked')) return mioLog(v+0.001);
 					else return v;
 				} ,
 				inverseTransform:  function(v) {
@@ -67,10 +67,7 @@ var plot = $.plot("#flot", [d1], {
 					else return v;
 				} , 
 				tickDecimals: 10 ,
-				scale: function(){
-					if ($('#fft').is(':checked')) return 1;
-					else return 0.1;
-				} ,
+				scale: 0.15 ,
 				tickFormatter: function (v, axis) {
 					if ($('#fft').is(':checked')) return "10" + (Math.round(mioLog(v))).toString().sup();
 					else return v;
