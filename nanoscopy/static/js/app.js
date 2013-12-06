@@ -13,13 +13,15 @@ function openWS(){
 		msg = JSON.parse(evt.data);
 		if (options.fft)
 		{
-			plot.getOptions().xaxes[0].ticks = [0.01,0.1,1,10,100,1000,1e+4];
-			plot.getOptions().yaxes[0].ticks = [1,10,100,1000,1e+4,1e+5,1e+6,1e+7,1e+8,1e+9,1e+10,1e+11,1e+12,1e+13,1e+14,1e+14];
-			plot.getOptions().yaxes[0].min = 0.001;
-			plot.getOptions().yaxes[0].max = 1e+14;
-			plot.setData(msg.data);
-			plot.setupGrid();
-			plot.draw();
+			if(msg.draw){
+				plot.getOptions().xaxes[0].ticks = [0.01,0.1,1,10,100,1000,1e+4];
+				plot.getOptions().yaxes[0].ticks = [1,10,100,1000,1e+4,1e+5,1e+6,1e+7,1e+8,1e+9,1e+10,1e+11,1e+12,1e+13,1e+14,1e+14];
+				plot.getOptions().yaxes[0].min = 0.001;
+				plot.getOptions().yaxes[0].max = 1e+14;
+				plot.setData(msg.data);
+				plot.setupGrid();
+				plot.draw();
+			}
 		}
 		else
 		{
@@ -34,7 +36,8 @@ function openWS(){
 		}
 		$('#kCalc').val(msg.kc);
 		$('#niR').val(msg.niR);
-	},160);
+		$('#Qfact').val(msg.Q);
+	},100);
 }
 	
 function closeWS(){
@@ -91,8 +94,8 @@ var plot = $.plot("#flot", [d1], {
 				}
 			},
 		
-		points: {show: false, radius: 1, shadowSize: 0},
-		lines: {show: true, shadowSize: 0},
+		points: {show: false, radius: 1},
+		lines: {show: true},
 		shadowSize: 0
 	}
 );
@@ -107,6 +110,51 @@ updateDownsampling = _.debounce(function(){
 $('#downsampling').val(options.downsampling);
 
 $('#downsampling').keyup(updateDownsampling);
+
+updateRo = _.debounce(function(){
+		options.ro = parseInt($('#ro').val()) || 1;
+		if (ws)
+			ws.send(JSON.stringify(options));
+	},
+	250);
+
+$('#ro').val(options.ro);
+
+$('#ro').keyup(updateRo);
+
+updateEta = _.debounce(function(){
+		options.eta = parseInt($('#eta').val()) || 1;
+		if (ws)
+			ws.send(JSON.stringify(options));
+	},
+	250);
+
+$('#eta').val(options.eta);
+
+$('#eta').keyup(updateEta);
+
+updateB = _.debounce(function(){
+		options.b = parseInt($('#b').val()) || 1;
+		if (ws)
+			ws.send(JSON.stringify(options));
+	},
+	250);
+
+$('#b').val(options.b);
+
+$('#b').keyup(updateB);
+
+updateL = _.debounce(function(){
+		options.L = parseInt($('#L').val()) || 1;
+		if (ws)
+			ws.send(JSON.stringify(options));
+	},
+	250);
+
+$('#L').val(options.L);
+
+$('#L').keyup(updateL);
+
 
 $('#fft').change(function(){
 		options.fft = $('#fft').is(':checked');

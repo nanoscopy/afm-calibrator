@@ -19,13 +19,17 @@
 		 			href="javascript:void(0)"
 		 			onclick="closeWS()"
 		 			>
-		 			<span class="glyphicon glyphicon-pause"></span>
+		 			<span class="glyphicon glyphicon-pause">
+		 				
+		 			</span>
 		 		</a>
 		 		<a class="btn btn-success pull-right"
 		 			href="javascript:void(0)"
 		 			onclick="openWS()"
 		 			>
-		 			<span class="glyphicon glyphicon-play"></span>
+		 			<span class="glyphicon glyphicon-play">
+		 				
+		 			</span>
 		 		</a>
 		 		
 			</div>
@@ -33,37 +37,121 @@
 		</div>
 		<div class="row">
 			<div id="flot"
-				style="width: 100%;height: 400px"></div>
+				style="width: 100%;height: 400px">
+				</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-3">
+				<p>Donwsampling</p>
+			</div>
+			<div class="col-sm-3">
+				<p>FFT</p>
+			</div>
+			<div class="col-sm-3">
+
+			</div>
+			<div class="col-sm-3">
+				<p>kc[N/m]</p>
+			</div>
 		</div>
 		<div class="row">
 			<div class="col-sm-3">
 				<input type="text" id="downsampling" >
 			</div>
+
 			<div class="col-sm-3">
-				<input type="checkbox" id="fft"> FFT			
+				<input type="checkbox" id="fft">			
+			</div>
+
+			<div class="col-sm-3">
+				
 			</div>
 			<div class="col-sm-3">
 				<input type="text" id="kCalc" >
 			</div>
+		</div>
+		
+		<div class="row">
 			<div class="col-sm-3">
-				<input type="text" id="niR" >
+				<p>ro</p>
+			</div>
+			<div class="col-sm-3">
+				<p>eta</p>
+			</div>
+			<div class="col-sm-3">
+
+			</div>
+			<div class="col-sm-3">
+				<p>Q factor</p>
 			</div>
 		</div>
-		  	
+		<div class="row">
+			<div class="col-sm-3">
+				<input type="text" id="ro" >
+			</div>
+
+			<div class="col-sm-3">
+				<input type="text" id="eta">			
+			</div>
+
+			<div class="col-sm-3">
+				
+			</div>
+			<div class="col-sm-3">
+				<input type="text" id="Qfact" >
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-3">
+				<p>Width</p>
+			</div>
+			<div class="col-sm-3">
+				<p>Length</p>
+			</div>
+			<div class="col-sm-3">
+
+			</div>
+			<div class="col-sm-3">
+				<p>Res. freq [Hz]</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-3">
+				<input type="text" id="b" >
+			</div>
+
+			<div class="col-sm-3">
+				<input type="text" id="L">			
+			</div>
+
+			<div class="col-sm-3">
+				
+			</div>
+			<div class="col-sm-3">
+				<input type="text" id="niR">
+			</div>
+		</div>
+
   	</div>
   	
   	<script>
 		var d1 = {{data}};
 
 		var options={
-				downsampling : 20,
+				downsampling : 50,
 				xmin: 0,
 				xmax: {{xmax}},
-				fft : false
+				fft : false,
+				ro: {{ro}},
+				eta: {{eta}},
+				b: {{b}},
+				L: {{L}}
 				};
-				
-		var kc = {{kc}}
-		var niR = {{niR}}
+
+		var Q = {{Q}};		
+		var kc = {{kc}};
+		var niR = {{niR}};
 		
 	</script>
     

@@ -17,9 +17,9 @@ r = range(CHUNK*2)
 
 NI = kcu.buildNI(float(CHUNK*2)/RATE,1.0/RATE) # Range frequenze creato apposta per le impostazioni della scheda sonora
 
-b = 35*(10**-6) # Valori di default per prova
+bP = 35*(10**-6) # Valori di default per prova
 
-L = 350*(10**-6) # Valori di default per prova
+LP = 350*(10**-6) # Valori di default per prova
 
 port = 8888
 
@@ -33,31 +33,34 @@ class SocketHandler(websocket.WebSocketHandler):
         
             data2 = kcu.PRF(NI[self.xmin:self.xmax:self.downsampling],Pw,Pdc,niR,Q)
         
-            kcCalc = kcu.GETk(kcu.roAria,b,L,Q,niR,kcu.etaAria)
+            kcCalc = kcu.GETk(self.ro,self.b,self.L,Q,niR,kcu.etaAria)
             
         except:
             data2 = np.zeros(len(data))
             kcCalc = 0
             niR = NI[self.xmin]
         
-        return niR,kcCalc,[list(a) for a in zip(r[self.xmin:self.xmax:self.downsampling],data2)]
+        return Q,niR,kcCalc,[list(a) for a in zip(r[self.xmin:self.xmax:self.downsampling],data2)]
     
     def data_listener(self, data):
         
         if not self.working:
             self.working = True
             if self.fft:
-                if self.acqCount == self.acqCountMax:
-                    self.acqCount = 0
-                    self.dataSum = np.zeros(CHUNK*2)+0.0001
                 data = abs(fft(data))**2
                 self.dataSum += data
                 self.acqCount += 1
+                self.drawFFT = False
                 data = self.dataSum/self.acqCount
+                if (self.acqCount == self.acqCountMax) and (self.xmin==0 and self.xmax==CHUNK*2):
+                    self.acqCount = 0
+                    self.dataSum = np.zeros(CHUNK*2)+0.0001
+                    self.drawFFT = True
     
             if (self.xmin>0 or self.xmax<CHUNK*2) and self.acqCount == self.acqCountMax:
                 self.d2 = []
-                self.niR,self.kc,self.d2 = self.work_on_d(data)
+                self.Q,self.niR,self.kc,self.d2 = self.work_on_d(data)
+                self.drawFFT = True
                 self.acqCount = 0
                 self.dataSum = np.zeros(CHUNK*2)+0.0001
             
@@ -69,7 +72,7 @@ class SocketHandler(websocket.WebSocketHandler):
             if self.d2:
                 d.append(self.d2)
             
-            message = {'niR':self.niR,'kc':self.kc,'data':d}
+            message = {'draw': self.drawFFT,'Q': self.Q, 'niR':self.niR,'kc':self.kc,'data':d}
             
             try:  
                 self.write_message(message)
@@ -91,25 +94,36 @@ class SocketHandler(websocket.WebSocketHandler):
         self.fft = options['fft']
         self.xmin = options['xmin']
         self.xmax = options['xmax']
+        self.ro = options['ro']
+        self.eta = options['eta']
+        self.b = options['b']
+        self.L = options['L']
         if self.xmin == 0 and self.xmax == CHUNK*2:
             self.d2 = []
             self.kc = 0
             self.niR = 0
+            self.Q = 0
         print options
     
     
     def open(self):
         ar.listeners.append(self.data_listener)
         self.working = False
-        self.downsampling = 20
+        self.downsampling = 50
         self.fft = False
         self.xmin = 0
         self.xmax = CHUNK*2
-        self.acqCountMax = 25
+        self.ro = kcu.roAria
+        self.eta = kcu.etaAria
+        self.acqCountMax = 50
         self.acqCount = 0
         self.d2 = []
         self.kc = 0
         self.niR = 0
+        self.Q = 0
+        self.b = bP
+        self.L = LP
+        self.drawFFT = False
         self.dataSum = np.zeros(CHUNK*2)
         print "WS open"
         
@@ -126,7 +140,12 @@ class MainHandler(tornado.web.RequestHandler):
                     data = data,
                     xmax = CHUNK*2,
                     kc = 0,
-                    niR = 0)
+                    niR = 0,
+                    Q = 0,
+                    eta = kcu.etaAria,
+                    ro = kcu.roAria,
+                    b=bP,
+                    L=LP)
 
 def start():
     application = tornado.web.Application([
