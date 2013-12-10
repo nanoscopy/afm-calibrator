@@ -15,7 +15,7 @@ ar = AudioReader()
 
 r = range(CHUNK*2)
 
-NI = kcu.buildNI(float(CHUNK*2)/RATE,1.0/RATE) # Range frequenze creato apposta per le impostazioni della scheda sonora
+NI = kcu.buildNI(float(CHUNK)/RATE,1.0/RATE) # Range frequenze creato apposta per le impostazioni della scheda sonora
 
 bP = 35*(10**-6) # Valori di default per prova
 
@@ -47,15 +47,17 @@ class SocketHandler(websocket.WebSocketHandler):
         
         if not self.working:
             self.working = True
+            data = data[0::2]
             if self.fft:
                 data = abs(fft(data))**2
                 self.dataSum += data
                 self.acqCount += 1
                 self.drawFFT = False
                 data = self.dataSum/self.acqCount
+                data = data[0:len(data)/2]
                 if (self.acqCount == self.acqCountMax) and (self.xmin==0 and self.xmax==CHUNK*2):
                     self.acqCount = 0
-                    self.dataSum = np.zeros(CHUNK*2)+0.0001
+                    self.dataSum = np.zeros(CHUNK)+0.0001
                     self.drawFFT = True
     
             if (self.xmin>0 or self.xmax<CHUNK*2) and self.acqCount == self.acqCountMax:
@@ -63,7 +65,7 @@ class SocketHandler(websocket.WebSocketHandler):
                 self.Q,self.niR,self.kc,self.d2 = self.work_on_d(data)
                 self.drawFFT = True
                 self.acqCount = 0
-                self.dataSum = np.zeros(CHUNK*2)+0.0001
+                self.dataSum = np.zeros(CHUNK)+0.0001
             
             if self.downsampling > 1:
                 data = data[::self.downsampling]
@@ -125,7 +127,7 @@ class SocketHandler(websocket.WebSocketHandler):
         self.b = bP
         self.L = LP
         self.drawFFT = False
-        self.dataSum = np.zeros(CHUNK*2)
+        self.dataSum = np.zeros(CHUNK)
         print "WS open"
         
     def on_close(self):

@@ -3,6 +3,10 @@ var plot = null;
 
 var xmax = options.xmax;
 
+function roundMe(valore, decimali){
+	return Math.round(valore*Math.pow(10,decimali))/Math.pow(10,decimali);
+}
+
 function mioLog(valore){
 	return Math.log(valore)/Math.LN10;
 }
@@ -13,11 +17,16 @@ function openWS(){
 		msg = JSON.parse(evt.data);
 		if (options.fft)
 		{
+			var corr = 22150/(xmax/4); //il fattore ha 'dimensioni' frequenza/indice
+			
 			if(msg.draw){
-				plot.getOptions().xaxes[0].ticks = [0.01,0.1,1,10,100,1000,1e+4];
-				plot.getOptions().yaxes[0].ticks = [1,10,100,1000,1e+4,1e+5,1e+6,1e+7,1e+8,1e+9,1e+10,1e+11,1e+12,1e+13,1e+14,1e+14];
-				plot.getOptions().yaxes[0].min = 0.001;
-				plot.getOptions().yaxes[0].max = 1e+14;
+				plot.getOptions().xaxes[0].min = 5;
+				plot.getOptions().xaxes[0].ticks = [[1,roundMe(corr,2)],[10,roundMe(10*corr,2)],[20,roundMe(20*corr,2)],[40,roundMe(40*corr,2)],
+				[80,roundMe(80*corr,2)],[160,roundMe(160*corr,2)],[320,roundMe(320*corr,2)],[640,roundMe(640*corr,2)],[1280,roundMe(1280*corr,2)],
+				[2560,roundMe(2560*corr,2)]];
+				plot.getOptions().yaxes[0].ticks = [1e+6,1e+7,1e+8,1e+9,1e+10,1e+11,1e+12,1e+13,1e+14,1e+15];
+				plot.getOptions().yaxes[0].min = 5e+5;
+				plot.getOptions().yaxes[0].max = 1e+15;
 				plot.setData(msg.data);
 				plot.setupGrid();
 				plot.draw();
@@ -69,8 +78,8 @@ var plot = $.plot("#flot", [d1], {
 					if ($('#fft').is(':checked')) return Math.pow(10,v);
 					else return v;
 				} , 
-				tickDecimals: 10 ,
-				scale: 0.15 ,
+				tickDecimals: 2 ,
+				//scale: 0.15 ,
 				tickFormatter: function (v, axis) {
 					if ($('#fft').is(':checked')) return "10" + (Math.round(mioLog(v))).toString().sup();
 					else return v;

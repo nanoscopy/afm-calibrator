@@ -24,13 +24,12 @@ if platform.system()=='Windows':
     c='c'
     try:
         print 'Running on port %d' % tornado_server.port
-        print 'Press Ctrl+C to stop'
+        print 'Press x and then Enter to stop'
         while c != 'x':
             c = raw_input()
         tornado_server.stop()
         sys.exit()
-    except Exception, e:
-        print e
+    except:
         tornado_server.stop()
         sys.exit(0)
 
