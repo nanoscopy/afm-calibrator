@@ -98,9 +98,9 @@ class SocketHandler(websocket.WebSocketHandler):
         self.xmin = options['xmin']
         self.xmax = options['xmax']
         self.ro = options['ro']
-        self.eta = options['eta']
-        self.b = options['b']
-        self.L = options['L']
+        self.eta = options['eta']/1e+5
+        self.b = options['b']/1e+6
+        self.L = options['L']/1e+6
         if self.xmin == 0 and self.xmax == CHUNK*2:
             self.d2 = []
             self.kc = 0
@@ -145,10 +145,10 @@ class MainHandler(tornado.web.RequestHandler):
                     kc = 0,
                     niR = 0,
                     Q = 0,
-                    eta = kcu.etaAria,
+                    eta = kcu.etaAria*1e+5,
                     ro = kcu.roAria,
-                    b=bP,
-                    L=LP)
+                    b=bP*1e+6,
+                    L=LP*1e+6)
 
 def start():
     application = tornado.web.Application([
