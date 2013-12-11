@@ -93,7 +93,7 @@ def GETparams(NI, Spectrum, T = None):
     
     paramsStart = initFit(NI, Spectrum)
     
-    fitResult = opt.curve_fit(PRF, NI, Spectrum, paramsStart)
+    fitResult = opt.curve_fit(PRF, NI, Spectrum, paramsStart, maxfev=200000)
     
     PW,Pdc,niR,Q = fitResult[0]
     

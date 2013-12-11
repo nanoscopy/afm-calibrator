@@ -35,7 +35,8 @@ class SocketHandler(websocket.WebSocketHandler):
         
             kcCalc = kcu.GETk(self.ro,self.b,self.L,Q,niR,kcu.etaAria)
 
-        except:
+        except Exception, e:
+         #   print e
             data2 = np.zeros(len(data))
             kcCalc = 'Nan'
             niR = 'Nan'
@@ -81,8 +82,8 @@ class SocketHandler(websocket.WebSocketHandler):
                 self.write_message(message)
             except Exception, e:
                 
-                print e.args
-                print e.message
+              #  print e.args
+              #  print e.message
                 
                 return
             self.working = False
@@ -106,7 +107,7 @@ class SocketHandler(websocket.WebSocketHandler):
             self.kc = 0
             self.niR = 0
             self.Q = 0
-        print options
+        #print options
     
     
     def open(self):
