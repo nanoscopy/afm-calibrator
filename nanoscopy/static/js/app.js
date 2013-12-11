@@ -3,6 +3,9 @@ var plot = null;
 
 var xmax = options.xmax;
 
+$('#Ymin').val('-3.3e+4');
+$('#Ymax').val('3.3e+4');
+
 function roundMe(valore, decimali){
 	return Math.round(valore*Math.pow(10,decimali))/Math.pow(10,decimali);
 }
@@ -25,8 +28,8 @@ function openWS(){
 				[80,roundMe(80*corr,2)],[160,roundMe(160*corr,2)],[320,roundMe(320*corr,2)],[640,roundMe(640*corr,2)],[1280,roundMe(1280*corr,2)],
 				[2560,roundMe(2560*corr,2)]];
 				plot.getOptions().yaxes[0].ticks = [1e+6,1e+7,1e+8,1e+9,1e+10,1e+11,1e+12,1e+13,1e+14,1e+15];
-				plot.getOptions().yaxes[0].min = 5e+5;
-				plot.getOptions().yaxes[0].max = 1e+15;
+				plot.getOptions().yaxes[0].min = $('#Ymin').val();
+				plot.getOptions().yaxes[0].max = $('#Ymax').val();
 				plot.setData(msg.data);
 				plot.setupGrid();
 				plot.draw();
@@ -37,8 +40,8 @@ function openWS(){
 			var max = xmax;
 			plot.getOptions().xaxes[0].ticks = [0, max/10, 2*max/10, 2*max/10, 3*max/10, 4*max/10, 5*max/10, 6*max/10, 7*max/10, 8*max/10, 9*max/10];
 			plot.getOptions().yaxes[0].ticks = [-30000,-20000,-10000,0,10000,20000,30000];
-			plot.getOptions().yaxes[0].min = -33000;
-			plot.getOptions().yaxes[0].max = 33000;
+			plot.getOptions().yaxes[0].min = $('#Ymin').val();
+			plot.getOptions().yaxes[0].max = $('#Ymax').val();
 			plot.setData(msg.data);
 			plot.setupGrid();
 			plot.draw();
@@ -167,6 +170,16 @@ $('#L').keyup(updateL);
 
 $('#fft').change(function(){
 		options.fft = $('#fft').is(':checked');
+		if ($('#fft').is(':checked'))
+		{
+			$('#Ymin').val('1e+4');
+			$('#Ymax').val('1e+16');
+		}
+		else
+		{
+			$('#Ymin').val('-3.3e+4');
+			$('#Ymax').val('3.3e+4');
+		}
 		if(ws)
 			ws.send(JSON.stringify(options));
 	}
