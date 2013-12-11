@@ -2,7 +2,7 @@ import tornado.ioloop
 import tornado.web
 import tornado
 from tornado.web import StaticFileHandler
-from audio import AudioReader, CHUNK, RATE
+from audio import AudioReader, CHUNK, audioRATE, ftdiRATE
 from tornado import websocket
 from numpy import linspace, abs
 import numpy as np
@@ -10,18 +10,19 @@ from numpy.fft import fft
 import json
 import kCalcUtils as kcu
 
+sunVersion = False
 
-ar = AudioReader()
+RATE = 44100
 
 r = range(CHUNK*2)
 
+ar = AudioReader(sun = sunVersion)
 NI = kcu.buildNI(float(CHUNK)/RATE,1.0/RATE) # Range frequenze creato apposta per le impostazioni della scheda sonora
 
-bP = 35*(10**-6) # Valori di default per prova
-
+bP = 35*(10**-6) # Valori di default per prova    
 LP = 350*(10**-6) # Valori di default per prova
-
 port = 8888
+    
 
 
 class SocketHandler(websocket.WebSocketHandler):
@@ -48,7 +49,8 @@ class SocketHandler(websocket.WebSocketHandler):
         
         if not self.working:
             self.working = True
-            data = data[0::2]
+            if not sunVersion:
+                data = data[0::2]
             if self.fft:
                 data = abs(fft(data))**2
                 self.dataSum += data

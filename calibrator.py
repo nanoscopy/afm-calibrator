@@ -1,14 +1,21 @@
 #!/usr/bin/python
 
 try:
-    import numpy, scipy, pyaudio, tornado
+    import numpy, scipy, tornado
 except ImportError:
     print "numpy, scipy, pyaudio and tornado are required to run the calibrator"
 
+try:
+    import pyaudio
+except ImportError:
+    print "pyaudio is required for use with sound card"
+
+try:
+    import libftdi
+except ImportError:
+    print "libftdi is required for use with FTDI cards"
+
 import signal, sys, threading, platform, time
-
-
-
 
 from nanoscopy import tornado_server
 
@@ -16,7 +23,23 @@ try:
     tornado_server.port=int(sys.argv[1])
 except:
     pass
-        
+
+try:
+    if len(sys.argv)==3 and sys.argv[2]=='ftdi':
+        tornado_server.sunVersion = True
+        tornado_server.RATE = tornado_server.ftdiRATE
+    else:
+        tornado_server.sunVersion = False
+        tornado_server.RATE = tornado_server.audioRATE
+    
+    tornado_server.ar = tornado_server.AudioReader(sun = tornado_server.sunVersion)
+    tornado_server.NI = tornado_server.kcu.buildNI(float(tornado_server.CHUNK)/tornado_server.RATE,1.0/tornado_server.RATE) # Range frequenze creato apposta per le impostazioni della scheda sonora
+except:
+    pass
+
+
+print tornado_server.sunVersion
+
 threading.Thread(target=tornado_server.start).start()
 
 if platform.system()=='Windows':

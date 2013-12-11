@@ -4,16 +4,18 @@ from threading import Thread, Condition
 import time
 from logging import thread
 import socket
+import pysun
 
 CHUNK = 2**12
-
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
-RATE = 44100
+audioRATE = 44100
+ftdiRATE = 180000
+RATE = audioRATE
 
 class AudioReader(Thread):
 
-    def __init__(self, raw = False, remote = False, host = 'localhost', port = 9999):
+    def __init__(self, raw = False, remote = False, host = 'localhost', port = 9999, sun = False):
         Thread.__init__(self)
         self.active = False
         self.listeners = []
@@ -23,12 +25,16 @@ class AudioReader(Thread):
         self.remote = remote
         self.host = host
         self.port = port
-        
+        self.sun = sun
+        if self.sun:
+            self.sunDev = pysun.suncard()
         
     def pause(self):
         self.active = False
     
     def play(self):
+        if self.sun:
+            self.sunDev.open()
         self.active = True
         self.condition.acquire()
         self.condition.notify()
@@ -39,6 +45,8 @@ class AudioReader(Thread):
             self.play()
         self.active = False
         self.quit = True
+        if self.sun:
+            self.sunDev.close()
 
     def readData(self):
         
@@ -92,13 +100,28 @@ class AudioReader(Thread):
                     l(data)
                 
         self.socket.close()
+        
+    def readSun(self):
+        
+        self.condition.acquire()
+        self.condition.wait()
+        self.condition.release()
+        
+        
+        while self.active:
+            data = self.sunDev.read(CHUNK)
+            for l in self.listeners:
+                l(data)
+                
+        self.sunDev.close()
 
     def run(self):
         while not self.quit:
-            if not self.remote:               
+            if not self.remote and not self.sun:               
                 self.readData()
-            else:
+            elif self.remote and not self.sun:
                 self.readRemoteData()
-            
+            elif not self.remote and self.sun:
+                self.readSun()
             
             
