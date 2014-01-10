@@ -49,7 +49,6 @@ class SocketHandler(websocket.WebSocketHandler):
         if not self.working:
             self.working = True
             data = data[0::2]
-            print np.max(data)
             if self.fft:
                 data = abs(fft(data))**2
                 self.dataSum += data
@@ -141,7 +140,7 @@ class MainHandler(tornado.web.RequestHandler):
     def get(self):
         data = [list(a) for a in zip(r,linspace(-5e+4,5e+12,CHUNK*2))]
         self.render("html/index.html", 
-                    title="AFM-Calibrator", 
+                    title="k Web Calibrator", 
                     data = data,
                     xmax = CHUNK*2,
                     kc = 0,

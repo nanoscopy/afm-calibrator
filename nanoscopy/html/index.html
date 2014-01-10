@@ -10,7 +10,7 @@
   	<div class="container">
 		<div class="row">
 			<div class="col-sm-8">
-		 		<h1><span class ="label label-primary">{{title}}</span></h1>
+		 		<h1>{{title}}</h1>
 			</div>
 
 			<div class="col-sm-4" style="margin-top:20px">
@@ -40,67 +40,53 @@
 				style="width: 100%;height: 400px">
 				</div>
 		</div>
-		<div class = "row">
-			<div class="col-sm-6">
-				<h3 style="text-align:center;"><span class ="label label-warning">Settings</span></h3>
+		<div class="row">
+			<div class="col-sm-3">
+				<p>Y-axis minimum</p>
+			</div>
+			<div class="col-sm-3">
+				<p>Y-axis maximum</p>
+			</div>
+			<div class="col-sm-3">
+
 			</div>
 			<div class="col-sm-3">
 				
 			</div>
-			<div class="col-sm-3">
-				<h3 style="text-align:center;"><span class ="label label-primary">Outputs</span></h3>
-			</div>
 		</div>
 		<div class="row">
 			<div class="col-sm-3">
-				<h4><span class ="label label-warning">Y-axis minimum</span></h4>
-			</div>
-			<div class="col-sm-3">
-				<h4><span class ="label label-warning">Y-axis maximum</span></h4>
-			</div>
-			<div class="col-sm-3">
-
-			</div>
-			<div class="col-sm-3">
-				<h4><span class ="label label-primary">Elastic Constant[N/m]</span></h4>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-sm-3">
-				<input type="text" id="Ymin" class ="form-control">
+				<input type="text" id="Ymin" >
 			</div>
 
 			<div class="col-sm-3">
-				<input type="text" id="Ymax" class ="form-control">			
+				<input type="text" id="Ymax">			
 			</div>
 
 			<div class="col-sm-3">
 				
 			</div>
 			<div class="col-sm-3">
-				<div class ="input-group">
-					<span class="input-group-addon">kc</span>
-					<input type="text" id="kCalc" class ="form-control">
-				</div>
+				
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-sm-3">
-				<h4><span class ="label label-warning">Downsampling</span></h4>
+				<p>Downsampling</p>
 			</div>
 			<div class="col-sm-3">
-				<h4><span class ="label label-warning">FFT</span></h4>
+				<p>FFT</p>
 			</div>
 			<div class="col-sm-3">
 
 			</div>
 			<div class="col-sm-3">
-				<h4><span class ="label label-primary">Q factor</span></h4>
+				<p>kc[N/m]</p>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-sm-3">
-				<input type="text" id="downsampling" class ="form-control">
+				<input type="text" id="downsampling" >
 			</div>
 
 			<div class="col-sm-3">
@@ -111,88 +97,69 @@
 				
 			</div>
 			<div class="col-sm-3">
-				<div class ="input-group">
-					<span class="input-group-addon">Q</span>
-					<input type="text" id="Qfact" class ="form-control">
-				</div>
+				<input type="text" id="kCalc" >
 			</div>
 		</div>
 		
 		<div class="row">
 			<div class="col-sm-3">
-				<h4><span class ="label label-warning">Medium density [Kg/m^3]</span></h4>
+				<p>Medium density [Kg/m^3]</p>
 			</div>
 			<div class="col-sm-3">
-				<h4><span class ="label label-warning">Medium viscosity [10^-5 Kg /(m s)]</span></h4>
+				<p>Medium viscosity [10^-5 Kg /(m s)]</p>
 			</div>
 			<div class="col-sm-3">
 
 			</div>
 			<div class="col-sm-3">
-				<h4><span class ="label label-primary">Res. freq [Hz]</span></h4>
+				<p>Q factor</p>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-sm-3">
-				<div class ="input-group">
-					<span class="input-group-addon">&rho;</span>
-					<input type="text" id="ro" class ="form-control">
-				</div>
+				<input type="text" id="ro" >
 			</div>
 
 			<div class="col-sm-3">
-				<div class ="input-group">
-					<span class="input-group-addon">&eta;</span>
-					<input type="text" id="eta" class ="form-control">
-				</div>			
+				<input type="text" id="eta">			
 			</div>
 
 			<div class="col-sm-3">
 				
 			</div>
-			
 			<div class="col-sm-3">
-				<div class ="input-group">
-					<span class="input-group-addon">&nu;R</span>
-					<input type="text" id="niR" class ="form-control">
-				</div>
+				<input type="text" id="Qfact" >
 			</div>
 		</div>
 		
 		<div class="row">
 			<div class="col-sm-3">
-				<h4><span class ="label label-warning">Width [&#956;m]</span></h4>
+				<p>Width [&#956;m]</p>
 			</div>
 			<div class="col-sm-3">
-				<h4><span class ="label label-warning">Length [&#956;m]</span></h4>
+				<p>Length [&#956;m]</p>
 			</div>
 			<div class="col-sm-3">
 
 			</div>
 			<div class="col-sm-3">
-				
+				<p>Res. freq [Hz]</p>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-sm-3">
-				<div class ="input-group">
-					<span class="input-group-addon">b</span>
-					<input type="text" id="b" class ="form-control">
-				</div>
+				<input type="text" id="b" >
 			</div>
 
 			<div class="col-sm-3">
-				<div class ="input-group">
-					<span class="input-group-addon">L</span>
-					<input type="text" id="L" class ="form-control">
-				</div>			
+				<input type="text" id="L">			
 			</div>
 
 			<div class="col-sm-3">
 				
 			</div>
 			<div class="col-sm-3">
-				
+				<input type="text" id="niR">
 			</div>
 		</div>
 
