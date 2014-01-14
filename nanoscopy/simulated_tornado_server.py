@@ -2,7 +2,7 @@ import tornado.ioloop
 import tornado.web
 import tornado
 from tornado.web import StaticFileHandler
-from audio import AudioReader, CHUNK, RATE
+from audio import AudioReader, CHUNK, RATE, divC
 from tornado import websocket
 from numpy import linspace, abs
 import numpy as np
@@ -11,12 +11,11 @@ import json
 import kCalcUtils as kcu
 import os
 
-
 ar = AudioReader(dataFile = 'nanoscopy'+os.sep+'FileEsempio'+os.sep+'data_25e-6_20sec_2')
 
-r = range(ar.CHUNK)
+r = range(ar.CHUNK/divC)
 
-NI = kcu.buildNI(float(ar.CHUNK)/ar.RATE,1.0/ar.RATE) # Range frequenze creato apposta per le impostazioni della scheda sonora
+NI = kcu.buildNI(float(ar.CHUNK/divC)/ar.RATE,1.0/ar.RATE) # Range frequenze creato apposta per le impostazioni della scheda sonora
 
 bP = 35*(10**-6) # Valori di default per prova
 
@@ -45,6 +44,7 @@ class SocketHandler(websocket.WebSocketHandler):
         
         return Q,niR,kcCalc,[list(a) for a in zip(r[self.xmin:self.xmax:self.downsampling],data2)]
     
+    
     def data_listener(self, data):
         
         if not self.working:
@@ -52,7 +52,6 @@ class SocketHandler(websocket.WebSocketHandler):
             #data = data[0::2]
             print len(data)
             print len(self.dataSum)
-            
             if self.fft:
                 data = abs(fft(data))**2
                 self.dataSum += data
@@ -60,17 +59,17 @@ class SocketHandler(websocket.WebSocketHandler):
                 self.drawFFT = False
                 data = self.dataSum/self.acqCount
                 data = data[0:len(data)/2]
-                if (self.acqCount == self.acqCountMax) and (self.xmin==0 and self.xmax==ar.CHUNK):
+                if (self.acqCount == self.acqCountMax) and (self.xmin==0 and self.xmax==ar.CHUNK/divC):
                     self.acqCount = 0
-                    self.dataSum = np.zeros(ar.CHUNK)+0.0001
+                    self.dataSum = np.zeros(ar.CHUNK/divC)+0.0001
                     self.drawFFT = True
     
-            if (self.xmin>0 or self.xmax<ar.CHUNK) and self.acqCount == self.acqCountMax:
+            if (self.xmin>0 or self.xmax<ar.CHUNK/divC) and self.acqCount == self.acqCountMax:
                 self.d2 = []
                 self.Q,self.niR,self.kc,self.d2 = self.work_on_d(data)
                 self.drawFFT = True
                 self.acqCount = 0
-                self.dataSum = np.zeros(ar.CHUNK)+0.0001
+                self.dataSum = np.zeros(ar.CHUNK/divC)+0.0001
             
             if self.downsampling > 1:
                 data = data[::self.downsampling]
@@ -106,7 +105,7 @@ class SocketHandler(websocket.WebSocketHandler):
         self.eta = options['eta']/1e+5
         self.b = options['b']/1e+6
         self.L = options['L']/1e+6
-        if self.xmin == 0 and self.xmax == ar.CHUNK:
+        if self.xmin == 0 and self.xmax == ar.CHUNK/divC:
             self.d2 = []
             self.kc = 0
             self.niR = 0
@@ -120,10 +119,10 @@ class SocketHandler(websocket.WebSocketHandler):
         self.downsampling = 50
         self.fft = False
         self.xmin = 0
-        self.xmax = ar.CHUNK
+        self.xmax = ar.CHUNK/divC
         self.ro = kcu.roAria
         self.eta = kcu.etaAria
-        self.acqCountMax = 50
+        self.acqCountMax = 1
         self.acqCount = 0
         self.d2 = []
         self.kc = 0
@@ -132,7 +131,7 @@ class SocketHandler(websocket.WebSocketHandler):
         self.b = bP
         self.L = LP
         self.drawFFT = False
-        self.dataSum = np.zeros(ar.CHUNK)
+        self.dataSum = np.zeros(ar.CHUNK/divC)
         ar.listeners.append(self.data_listener)
         print "WS open"
         
@@ -143,11 +142,12 @@ class SocketHandler(websocket.WebSocketHandler):
 class MainHandler(tornado.web.RequestHandler):
     
     def get(self):
-        data = [list(a) for a in zip(r,linspace(-5e+4,5e+12,ar.CHUNK))]
+        data = [list(a) for a in zip(r,linspace(-5e+4,5e+12,ar.CHUNK/divC))]
         self.render("html/index.html", 
                     title="AFM-Calibrator", 
                     data = data,
-                    xmax = ar.CHUNK,
+                    xmax = ar.CHUNK/divC,
+                    mRate = ar.RATE/2,
                     kc = 0,
                     niR = 0,
                     Q = 0,

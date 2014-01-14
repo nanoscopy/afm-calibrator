@@ -145,6 +145,7 @@ class MainHandler(tornado.web.RequestHandler):
                     title="AFM-Calibrator", 
                     data = data,
                     xmax = CHUNK*2,
+                    mRate = RATE/2,
                     kc = 0,
                     niR = 0,
                     Q = 0,

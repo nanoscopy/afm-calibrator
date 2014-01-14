@@ -6,6 +6,8 @@ from logging import thread
 import socket
 from FileEsempio import DataFilesLib as dfl
 
+divC = 1
+
 CHUNK = 2**12
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
@@ -24,7 +26,6 @@ class AudioReader(Thread):
         self.host = host
         self.port = port
         self.simul = dataFile is not None
-        print self.simul
         if self.simul:
             self.simulFile = dfl.qrtaiFile(dataFile)
            # self.CHUNK = int(self.simulFile.rate/8)
@@ -44,9 +45,9 @@ class AudioReader(Thread):
     
     def play(self):
         self.active = True
-        #self.condition.acquire()
-        #self.condition.notify()
-        #self.condition.release()
+        self.condition.acquire()
+        self.condition.notify()
+        self.condition.release()
     
     def stop(self):
         if not self.active:
@@ -56,10 +57,9 @@ class AudioReader(Thread):
 
     def readData(self):
         
-        #self.condition.acquire()
-        #self.condition.wait()
-        #self.condition.release()
-        print 'real'
+        self.condition.acquire()
+        self.condition.wait()
+        self.condition.release()
         
         self.stream = pyaudio.PyAudio().open(format=self.FORMAT, 
             channels=self.CHANNELS, 
@@ -110,31 +110,27 @@ class AudioReader(Thread):
         
     def readSimulatedData(self):
         
-        print 'simulate'
-        #self.condition.acquire()
-        #self.condition.wait()
-        #self.condition.release()
-        print 'simulate'
+        self.condition.acquire()
+        self.condition.wait()
+        self.condition.release()
         
         while self.active:
-            if self.simulCount+self.CHUNK > len(self.simulFile.data):
+            if self.simulCount+self.CHUNK+1 > len(self.simulFile.data):
                 self.simulCount = 0
-            data = self.simulFile.data[self.simulCount:self.simulCount+self.CHUNK]
-            self.simulCount += self.CHUNK
+            data = self.simulFile.data[self.simulCount:self.simulCount+self.CHUNK/divC]
+            self.simulCount += (self.CHUNK+1)
                 
             for l in self.listeners:
                 l(data)
         
 
     def run(self):
-        print self.simul
         while not self.quit:
             if not self.remote and not self.simul:               
                 self.readData()
             elif self.remote and not self.simul:
                 self.readRemoteData()
             elif self.simul:
-                print 'pippo'
                 self.readSimulatedData()
             
             
