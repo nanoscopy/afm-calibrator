@@ -128,6 +128,13 @@ class qrtaiFile(object):
                 self.start = float(line[0:splitCol-1])
                 
             self.time.append(temp1-self.start)
+        sum = 0
+        cont = 0
+        for t in range(len(self.time)-1):
+            sum += self.time[t+1]-self.time[t]
+            cont += 1
+            
+        self.rate = cont/sum
 
 
 def movAvg(data,window):

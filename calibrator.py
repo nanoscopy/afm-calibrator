@@ -10,7 +10,10 @@ import signal, sys, threading, platform, time
 
 
 
-from nanoscopy import tornado_server
+if sys.argv[2] == 'simulate':
+    from nanoscopy import simulated_tornado_server as tornado_server
+else: 
+    from nanoscopy import tornado_server
 
 try:
     tornado_server.port=int(sys.argv[1])

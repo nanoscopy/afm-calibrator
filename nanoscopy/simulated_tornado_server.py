@@ -9,13 +9,14 @@ import numpy as np
 from numpy.fft import fft
 import json
 import kCalcUtils as kcu
+import os
 
 
-ar = AudioReader()
+ar = AudioReader(dataFile = 'nanoscopy'+os.sep+'FileEsempio'+os.sep+'data_25e-6_20sec_2')
 
-r = range(CHUNK*2)
+r = range(ar.CHUNK)
 
-NI = kcu.buildNI(float(CHUNK)/RATE,1.0/RATE) # Range frequenze creato apposta per le impostazioni della scheda sonora
+NI = kcu.buildNI(float(ar.CHUNK)/ar.RATE,1.0/ar.RATE) # Range frequenze creato apposta per le impostazioni della scheda sonora
 
 bP = 35*(10**-6) # Valori di default per prova
 
@@ -48,8 +49,10 @@ class SocketHandler(websocket.WebSocketHandler):
         
         if not self.working:
             self.working = True
-            data = data[0::2]
-            print np.max(data)
+            #data = data[0::2]
+            print len(data)
+            print len(self.dataSum)
+            
             if self.fft:
                 data = abs(fft(data))**2
                 self.dataSum += data
@@ -57,17 +60,17 @@ class SocketHandler(websocket.WebSocketHandler):
                 self.drawFFT = False
                 data = self.dataSum/self.acqCount
                 data = data[0:len(data)/2]
-                if (self.acqCount == self.acqCountMax) and (self.xmin==0 and self.xmax==CHUNK*2):
+                if (self.acqCount == self.acqCountMax) and (self.xmin==0 and self.xmax==ar.CHUNK):
                     self.acqCount = 0
-                    self.dataSum = np.zeros(CHUNK)+0.0001
+                    self.dataSum = np.zeros(ar.CHUNK)+0.0001
                     self.drawFFT = True
     
-            if (self.xmin>0 or self.xmax<CHUNK*2) and self.acqCount == self.acqCountMax:
+            if (self.xmin>0 or self.xmax<ar.CHUNK) and self.acqCount == self.acqCountMax:
                 self.d2 = []
                 self.Q,self.niR,self.kc,self.d2 = self.work_on_d(data)
                 self.drawFFT = True
                 self.acqCount = 0
-                self.dataSum = np.zeros(CHUNK)+0.0001
+                self.dataSum = np.zeros(ar.CHUNK)+0.0001
             
             if self.downsampling > 1:
                 data = data[::self.downsampling]
@@ -103,7 +106,7 @@ class SocketHandler(websocket.WebSocketHandler):
         self.eta = options['eta']/1e+5
         self.b = options['b']/1e+6
         self.L = options['L']/1e+6
-        if self.xmin == 0 and self.xmax == CHUNK*2:
+        if self.xmin == 0 and self.xmax == ar.CHUNK:
             self.d2 = []
             self.kc = 0
             self.niR = 0
@@ -113,10 +116,11 @@ class SocketHandler(websocket.WebSocketHandler):
     
     def open(self):
         self.working = False
+        print ar.listeners
         self.downsampling = 50
         self.fft = False
         self.xmin = 0
-        self.xmax = CHUNK*2
+        self.xmax = ar.CHUNK
         self.ro = kcu.roAria
         self.eta = kcu.etaAria
         self.acqCountMax = 50
@@ -128,10 +132,9 @@ class SocketHandler(websocket.WebSocketHandler):
         self.b = bP
         self.L = LP
         self.drawFFT = False
-        self.dataSum = np.zeros(CHUNK)
+        self.dataSum = np.zeros(ar.CHUNK)
         ar.listeners.append(self.data_listener)
         print "WS open"
-        
         
     def on_close(self):
         ar.listeners.remove(self.data_listener)
@@ -140,11 +143,11 @@ class SocketHandler(websocket.WebSocketHandler):
 class MainHandler(tornado.web.RequestHandler):
     
     def get(self):
-        data = [list(a) for a in zip(r,linspace(-5e+4,5e+12,CHUNK*2))]
+        data = [list(a) for a in zip(r,linspace(-5e+4,5e+12,ar.CHUNK))]
         self.render("html/index.html", 
                     title="AFM-Calibrator", 
                     data = data,
-                    xmax = CHUNK*2,
+                    xmax = ar.CHUNK,
                     kc = 0,
                     niR = 0,
                     Q = 0,

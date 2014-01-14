@@ -20,7 +20,7 @@ function openWS(){
 		msg = JSON.parse(evt.data);
 		if (options.fft)
 		{
-			var corr = 22150/(xmax/4); //il fattore ha 'dimensioni' frequenza/indice
+			var corr = 22150/(xmax/2); //il fattore ha 'dimensioni' frequenza/indice
 			
 			if(msg.draw){
 				plot.getOptions().xaxes[0].min = 5;
