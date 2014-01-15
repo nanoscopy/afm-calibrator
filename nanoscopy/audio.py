@@ -119,6 +119,7 @@ class AudioReader(Thread):
                 self.simulCount = 0
             data = self.simulFile.data[self.simulCount:self.simulCount+self.CHUNK/divC]
             self.simulCount += (self.CHUNK+1)
+            time.sleep((self.CHUNK/divC)/float(self.RATE))
                 
             for l in self.listeners:
                 l(data)

@@ -50,8 +50,6 @@ class SocketHandler(websocket.WebSocketHandler):
         if not self.working:
             self.working = True
             #data = data[0::2]
-            print len(data)
-            print len(self.dataSum)
             if self.fft:
                 data = abs(fft(data))**2
                 self.dataSum += data
@@ -66,6 +64,7 @@ class SocketHandler(websocket.WebSocketHandler):
     
             if (self.xmin>0 or self.xmax<ar.CHUNK/divC) and self.acqCount == self.acqCountMax:
                 self.d2 = []
+                print self.acqCount
                 self.Q,self.niR,self.kc,self.d2 = self.work_on_d(data)
                 self.drawFFT = True
                 self.acqCount = 0
@@ -122,7 +121,7 @@ class SocketHandler(websocket.WebSocketHandler):
         self.xmax = ar.CHUNK/divC
         self.ro = kcu.roAria
         self.eta = kcu.etaAria
-        self.acqCountMax = 1
+        self.acqCountMax = ar.RATE/ar.CHUNK*4
         self.acqCount = 0
         self.d2 = []
         self.kc = 0
