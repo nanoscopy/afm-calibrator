@@ -67,11 +67,17 @@
 		</div>
 		<div class="row">
 			<div class="col-sm-3">
-				<input type="text" id="Ymin" class ="form-control">
+				<div class ="input-group">
+					<span class="input-group-addon">Ymin</span>
+					<input type="text" id="Ymin" class ="form-control">
+				</div>
 			</div>
 
 			<div class="col-sm-3">
-				<input type="text" id="Ymax" class ="form-control">			
+				<div class ="input-group">
+					<span class="input-group-addon">Ymax</span>
+					<input type="text" id="Ymax" class ="form-control">
+				</div>			
 			</div>
 
 			<div class="col-sm-3">
@@ -120,10 +126,10 @@
 		
 		<div class="row">
 			<div class="col-sm-3">
-				<h4><span class ="label label-warning">Medium density [Kg/m^3]</span></h4>
+				<h4><span class ="label label-warning">FFT average time [s]</span></h4>
 			</div>
 			<div class="col-sm-3">
-				<h4><span class ="label label-warning">Medium viscosity [10^-5 Kg /(m s)]</span></h4>
+
 			</div>
 			<div class="col-sm-3">
 
@@ -135,18 +141,15 @@
 		<div class="row">
 			<div class="col-sm-3">
 				<div class ="input-group">
-					<span class="input-group-addon">&rho;</span>
-					<input type="text" id="ro" class ="form-control">
+					<span class="input-group-addon">Avg</span>
+					<input type="text" id="avgTime" class ="form-control">
 				</div>
 			</div>
 
 			<div class="col-sm-3">
-				<div class ="input-group">
-					<span class="input-group-addon">&eta;</span>
-					<input type="text" id="eta" class ="form-control">
-				</div>			
+				
 			</div>
-
+			
 			<div class="col-sm-3">
 				
 			</div>
@@ -195,6 +198,42 @@
 				
 			</div>
 		</div>
+		<div class="row">
+			<div class="col-sm-3">
+				<h4><span class ="label label-warning">Medium density [Kg/m^3]</span></h4>
+			</div>
+			<div class="col-sm-3">
+				<h4><span class ="label label-warning">Medium viscosity [10^-5 Kg /(m s)]</span></h4>
+			</div>
+			<div class="col-sm-3">
+				
+			</div>
+			<div class="col-sm-3">
+				
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-3">
+				<div class ="input-group">
+					<span class="input-group-addon">&rho;</span>
+					<input type="text" id="ro" class ="form-control">
+				</div>
+			</div>
+
+			<div class="col-sm-3">
+				<div class ="input-group">
+					<span class="input-group-addon">&eta;</span>
+					<input type="text" id="eta" class ="form-control">
+				</div>			
+			</div>
+			<div class="col-sm-3">
+				
+			</div>
+			<div class="col-sm-3">
+				
+			</div>
+		</div>
 
   	</div>
   	
@@ -208,6 +247,7 @@
 				xmin: 0,
 				xmax: {{xmax}},
 				fft : false,
+				avgT: {{avgT}},
 				ro: {{ro}},
 				eta: {{eta}},
 				b: {{b}},

@@ -169,6 +169,17 @@ $('#L').val(options.L);
 
 $('#L').keyup(updateL);
 
+updateAvgTime = _.debounce(function(){
+		options.avgT = parseFloat($('#avgTime').val()) || 1;
+		if (ws)
+			ws.send(JSON.stringify(options));
+	},
+	250);
+
+$('#avgTime').val(options.avgT);
+
+$('#avgTime').keyup(updateAvgTime);
+
 
 $('#fft').change(function(){
 		options.fft = $('#fft').is(':checked');

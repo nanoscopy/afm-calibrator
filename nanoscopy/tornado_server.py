@@ -57,12 +57,12 @@ class SocketHandler(websocket.WebSocketHandler):
                 self.drawFFT = False
                 data = self.dataSum/self.acqCount
                 data = data[0:len(data)/2]
-                if (self.acqCount == self.acqCountMax) and (self.xmin==0 and self.xmax==CHUNK*2):
+                if (self.acqCount >= self.acqCountMax) and (self.xmin==0 and self.xmax==CHUNK*2):
                     self.acqCount = 0
                     self.dataSum = np.zeros(CHUNK)+0.0001
                     self.drawFFT = True
     
-            if (self.xmin>0 or self.xmax<CHUNK*2) and self.acqCount == self.acqCountMax:
+            if (self.xmin>0 or self.xmax<CHUNK*2) and self.acqCount >= self.acqCountMax:
                 self.d2 = []
                 self.Q,self.niR,self.kc,self.d2 = self.work_on_d(data)
                 self.drawFFT = True
@@ -103,6 +103,8 @@ class SocketHandler(websocket.WebSocketHandler):
         self.eta = options['eta']/1e+5
         self.b = options['b']/1e+6
         self.L = options['L']/1e+6
+        self.avgT = options['avgT']
+        self.acqCountMax = RATE/CHUNK*self.avgT
         if self.xmin == 0 and self.xmax == CHUNK*2:
             self.d2 = []
             self.kc = 0
@@ -119,7 +121,8 @@ class SocketHandler(websocket.WebSocketHandler):
         self.xmax = CHUNK*2
         self.ro = kcu.roAria
         self.eta = kcu.etaAria
-        self.acqCountMax = 50
+        self.avgT = 2
+        self.acqCountMax = RATE/CHUNK*self.avgT
         self.acqCount = 0
         self.d2 = []
         self.kc = 0
@@ -146,6 +149,7 @@ class MainHandler(tornado.web.RequestHandler):
                     data = data,
                     xmax = CHUNK*2,
                     mRate = RATE/2,
+                    avgT = 2,
                     kc = 0,
                     niR = 0,
                     Q = 0,
