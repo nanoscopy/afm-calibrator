@@ -129,7 +129,7 @@
 				<h4><span class ="label label-warning">FFT average time [s]</span></h4>
 			</div>
 			<div class="col-sm-3">
-
+				<h4><span class ="label label-warning">Simulate</span></h4>
 			</div>
 			<div class="col-sm-3">
 
@@ -145,9 +145,9 @@
 					<input type="text" id="avgTime" class ="form-control">
 				</div>
 			</div>
-
-			<div class="col-sm-3">
 				
+			<div class="col-sm-3">
+				<input type="checkbox" id="simul">
 			</div>
 			
 			<div class="col-sm-3">
@@ -251,7 +251,8 @@
 				ro: {{ro}},
 				eta: {{eta}},
 				b: {{b}},
-				L: {{L}}
+				L: {{L}},
+				simul: false
 				};
 
 		var Q = {{Q}};		

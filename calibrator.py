@@ -4,14 +4,17 @@ try:
     import numpy, scipy, pyaudio, tornado
 except ImportError:
     print "numpy, scipy, pyaudio and tornado are required to run the calibrator"
+    pass
 
 import signal, sys, threading, platform, time
 
 
 
-
-if sys.argv[2] == 'simulate':
-    from nanoscopy import simulated_tornado_server as tornado_server
+if len(sys.argv) >= 3:
+    if sys.argv[2] == 'simulate':
+        from nanoscopy import simulated_tornado_server as tornado_server
+    else:
+        from nanoscopy import tornado_server
 else: 
     from nanoscopy import tornado_server
 

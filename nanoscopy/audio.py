@@ -15,30 +15,28 @@ RATE = 44100
 
 class AudioReader(Thread):
 
-    def __init__(self, raw = False, remote = False, dataFile = None, host = 'localhost', port = 9999):
+    def __init__(self, raw = False, remote = False, dataFile = None, host = 'localhost', port = 9999, chunk = CHUNK, rate = RATE, chunkS = 2500, rateS = 40000):
         Thread.__init__(self)
         self.active = False
         self.listeners = []
+        self.simulListeners = []
         self.condition = Condition()
         self.quit = False
         self.raw = raw
         self.remote = remote
         self.host = host
         self.port = port
-        self.simul = dataFile is not None
-        if self.simul:
-            self.simulFile = dfl.qrtaiFile(dataFile)
-           # self.CHUNK = int(self.simulFile.rate/8)
-           # self.RATE = float(self.simulFile.rate)
-            self.RATE = 40000
-            self.CHUNK = 2500
-            self.simulCount = 0
-        else:
-            self.simulFile = None
-            self.CHUNK = CHUNK
-            self.FORMAT = FORMAT
-            self.CHANNELS = CHANNELS
-            self.RATE = RATE
+        self.simul = False
+      # self.CHUNK = int(self.simulFile.rate/8)
+      # self.RATE = float(self.simulFile.rate)
+        self.RATEs = rateS
+        self.CHUNKs = chunkS
+        self.simulCount = 0
+        self.simulFile = dfl.qrtaiFile(dataFile)
+        self.CHUNK = CHUNK
+        self.FORMAT = FORMAT
+        self.CHANNELS = CHANNELS
+        self.RATE = RATE
         
     def pause(self):
         self.active = False
@@ -69,6 +67,13 @@ class AudioReader(Thread):
         
         while self.active:
             data = self.stream.read(self.CHUNK)
+            
+            if self.simulCount+self.CHUNKs+1 > len(self.simulFile.data):
+                self.simulCount = 0
+            dataS = self.simulFile.data[self.simulCount:self.simulCount+self.CHUNKs/divC]
+            self.simulCount += (self.CHUNKs+1)
+            #time.sleep((self.CHUNKs/divC)/float(self.RATEs))
+            
             if not self.raw:            
                 count = len(data) / 2
                 fmt = "%dh" % (count)
@@ -77,8 +82,24 @@ class AudioReader(Thread):
                 shorts = data
             for l in self.listeners:
                 l(shorts)
+            for ls in self.simulListeners:
+                ls(dataS)
                 
         self.stream.close()
+        
+        
+    def readSimulatedData(self):
+        
+        self.condition.acquire()
+        self.condition.wait()
+        self.condition.release()
+        
+        while self.active:
+            
+                
+            for l in self.simulListeners:
+                l(data)
+        
 
     def readRemoteData(self):
         
@@ -108,31 +129,14 @@ class AudioReader(Thread):
                 
         self.socket.close()
         
-    def readSimulatedData(self):
-        
-        self.condition.acquire()
-        self.condition.wait()
-        self.condition.release()
-        
-        while self.active:
-            if self.simulCount+self.CHUNK+1 > len(self.simulFile.data):
-                self.simulCount = 0
-            data = self.simulFile.data[self.simulCount:self.simulCount+self.CHUNK/divC]
-            self.simulCount += (self.CHUNK+1)
-            time.sleep((self.CHUNK/divC)/float(self.RATE))
-                
-            for l in self.listeners:
-                l(data)
-        
 
     def run(self):
         while not self.quit:
-            if not self.remote and not self.simul:               
+            if not self.remote:               
                 self.readData()
-            elif self.remote and not self.simul:
-                self.readRemoteData()
-            elif self.simul:
                 self.readSimulatedData()
+            else:
+                self.readRemoteData()
             
             
             

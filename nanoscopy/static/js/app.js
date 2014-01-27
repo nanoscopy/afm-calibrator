@@ -180,6 +180,12 @@ $('#avgTime').val(options.avgT);
 
 $('#avgTime').keyup(updateAvgTime);
 
+$('#simul').change(function(){
+		options.simul = $('#simul').is(':checked');
+		if(ws)
+			ws.send(JSON.stringify(options));
+	}
+);
 
 $('#fft').change(function(){
 		options.fft = $('#fft').is(':checked');

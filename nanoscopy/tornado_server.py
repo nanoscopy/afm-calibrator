@@ -9,13 +9,16 @@ import numpy as np
 from numpy.fft import fft
 import json
 import kCalcUtils as kcu
+import os
 
 
-ar = AudioReader()
+ar = AudioReader(dataFile = 'nanoscopy'+os.sep+'FileEsempio'+os.sep+'data_25e-6_20sec_2')
 
-r = range(CHUNK*2)
+r = range(ar.CHUNK*2)
+rs = range(ar.CHUNKs*2)
 
-NI = kcu.buildNI(float(CHUNK)/RATE,1.0/RATE) # Range frequenze creato apposta per le impostazioni della scheda sonora
+NI = kcu.buildNI(float(ar.CHUNK)/ar.RATE,1.0/ar.RATE) # Range frequenze creato apposta per le impostazioni della scheda sonora
+NIs = kcu.buildNI(float(ar.CHUNKs)/ar.RATEs,1.0/ar.RATEs) # Range frequenze creato apposta per le impostazioni della scheda sonora
 
 bP = 35*(10**-6) # Valori di default per prova
 
@@ -26,12 +29,15 @@ port = 8888
 
 class SocketHandler(websocket.WebSocketHandler):
     
-    def work_on_d(self, data):
+    def work_on_d(self, data, dad):
+        
+        mioNI = NI if dad=='real' else NIs
+        mioR = r if dad=='real' else rs
         
         try:
-            Pw,Pdc,niR,Q = kcu.GETparams(NI[self.xmin:self.xmax:self.downsampling],data[self.xmin:self.xmax:self.downsampling])
+            Pw,Pdc,niR,Q = kcu.GETparams(mioNI[self.xmin:self.xmax:self.downsampling],data[self.xmin:self.xmax:self.downsampling])
         
-            data2 = kcu.PRF(NI[self.xmin:self.xmax:self.downsampling],Pw,Pdc,niR,Q)
+            data2 = kcu.PRF(mioNI[self.xmin:self.xmax:self.downsampling],Pw,Pdc,niR,Q)
         
             kcCalc = kcu.GETk(self.ro,self.b,self.L,Q,niR,kcu.etaAria)
 
@@ -42,14 +48,13 @@ class SocketHandler(websocket.WebSocketHandler):
             niR = 'Nan'
             Q = 'Nan'
         
-        return Q,niR,kcCalc,[list(a) for a in zip(r[self.xmin:self.xmax:self.downsampling],data2)]
+        return Q,niR,kcCalc,[list(a) for a in zip(mioR[self.xmin:self.xmax:self.downsampling],data2)]
     
     def data_listener(self, data):
         
         if not self.working:
             self.working = True
             data = data[0::2]
-            print np.max(data)
             if self.fft:
                 data = abs(fft(data))**2
                 self.dataSum += data
@@ -57,22 +62,77 @@ class SocketHandler(websocket.WebSocketHandler):
                 self.drawFFT = False
                 data = self.dataSum/self.acqCount
                 data = data[0:len(data)/2]
-                if (self.acqCount >= self.acqCountMax) and (self.xmin==0 and self.xmax==CHUNK*2):
+                if (self.acqCount >= self.acqCountMax) and (self.xmin==0 and self.xmax==ar.CHUNK*2):
                     self.acqCount = 0
-                    self.dataSum = np.zeros(CHUNK)+0.0001
+                    self.dataSum = np.zeros(ar.CHUNK)+0.0001
                     self.drawFFT = True
     
-            if (self.xmin>0 or self.xmax<CHUNK*2) and self.acqCount >= self.acqCountMax:
+            if (self.xmin>0 or self.xmax<ar.CHUNK*2) and self.acqCount >= self.acqCountMax:
                 self.d2 = []
-                self.Q,self.niR,self.kc,self.d2 = self.work_on_d(data)
+                self.Q,self.niR,self.kc,self.d2 = self.work_on_d(data,'real')
                 self.drawFFT = True
                 self.acqCount = 0
-                self.dataSum = np.zeros(CHUNK)+0.0001
+                self.dataSum = np.zeros(ar.CHUNK)+0.0001
             
             if self.downsampling > 1:
                 data = data[::self.downsampling]
             
             d = [[list(a) for a in zip(r[::self.downsampling],data)]]
+            
+            if self.d2:
+                d.append(self.d2)
+            
+            message = {'draw': self.drawFFT,'Q': self.Q, 'niR':self.niR,'kc':self.kc,'data':d}
+            
+            try:  
+                self.write_message(message)
+            except Exception, e:
+                
+              #  print e.args
+              #  print e.message
+                
+                return
+            self.working = False
+            
+        else:
+            return
+        
+    def data_listener_sim(self, data):
+        
+        if not self.working:
+            
+            self.working = True
+            if self.fft:
+                data = abs(fft(data))**2
+                self.dataSum += data
+                self.acqCount += 1
+                print self.acqCount
+                print self.acqCountMax
+                print self.acqCount == self.acqCountMax
+                print self.xmax
+                print ar.CHUNKs
+                print self.xmin
+                self.drawFFT = False
+                data = self.dataSum/self.acqCount
+                data = data[0:len(data)/2]
+                if (self.acqCount >= self.acqCountMax) and (self.xmin==0 and self.xmax==ar.CHUNKs*2):
+                    self.acqCount = 0
+                    self.dataSum = np.zeros(ar.CHUNKs)+0.0001
+                    self.drawFFT = True
+                    print 'ciao'
+    
+            if (self.xmin>0 or self.xmax<ar.CHUNKs*2) and self.acqCount >= self.acqCountMax:
+                self.d2 = []
+                self.Q,self.niR,self.kc,self.d2 = self.work_on_d(data,'simulate')
+                self.drawFFT = True
+                self.acqCount = 0
+                self.dataSum = np.zeros(ar.CHUNKs)+0.0001
+                print 'pippo'
+            
+            if self.downsampling > 1:
+                data = data[::self.downsampling]
+            
+            d = [[list(a) for a in zip(rs[::self.downsampling],data)]]
             
             if self.d2:
                 d.append(self.d2)
@@ -98,14 +158,33 @@ class SocketHandler(websocket.WebSocketHandler):
         self.downsampling = options['downsampling']
         self.fft = options['fft']
         self.xmin = options['xmin']
-        self.xmax = options['xmax']
+       # self.xmax = options['xmax']
         self.ro = options['ro']
         self.eta = options['eta']/1e+5
         self.b = options['b']/1e+6
         self.L = options['L']/1e+6
         self.avgT = options['avgT']
-        self.acqCountMax = RATE/CHUNK*self.avgT
-        if self.xmin == 0 and self.xmax == CHUNK*2:
+        if self.simul != options['simul']:
+            self.acqCount = 0
+            self.dataSum = []
+            if options['simul']:
+                print 'ciao'
+                ar.listeners.remove(self.data_listener)
+                ar.simulListeners.append(self.data_listener_sim)
+                self.dataSum = np.zeros(ar.CHUNKs)+0.0001
+                self.acqCountMax = ar.RATEs/ar.CHUNKs*self.avgT
+                self.xmax = ar.CHUNKs*2
+                print self.xmax
+            else:
+                ar.simulListeners.remove(self.data_listener_sim)
+                ar.listeners.append(self.data_listener)
+                self.dataSum = np.zeros(ar.CHUNK)+0.0001
+                self.acqCountMax = ar.RATE/ar.CHUNK*self.avgT
+                self.xmax = ar.CHUNK*2
+
+        self.simul = options['simul']
+            
+        if self.xmin == 0 and self.xmax == ar.CHUNKs*2 if self.simul else ar.CHUNK*2:
             self.d2 = []
             self.kc = 0
             self.niR = 0
@@ -118,11 +197,11 @@ class SocketHandler(websocket.WebSocketHandler):
         self.downsampling = 50
         self.fft = False
         self.xmin = 0
-        self.xmax = CHUNK*2
+        self.xmax = ar.CHUNK*2
         self.ro = kcu.roAria
         self.eta = kcu.etaAria
         self.avgT = 2
-        self.acqCountMax = RATE/CHUNK*self.avgT
+        self.acqCountMax = ar.RATE/ar.CHUNK*self.avgT
         self.acqCount = 0
         self.d2 = []
         self.kc = 0
@@ -131,24 +210,28 @@ class SocketHandler(websocket.WebSocketHandler):
         self.b = bP
         self.L = LP
         self.drawFFT = False
-        self.dataSum = np.zeros(CHUNK)
+        self.dataSum = np.zeros(ar.CHUNK)
+        self.simul = False
         ar.listeners.append(self.data_listener)
         print "WS open"
         
         
     def on_close(self):
-        ar.listeners.remove(self.data_listener)
+        try:
+            ar.listeners.remove(self.data_listener)
+        except:
+            ar.simulListeners.remove(self.data_listener_sim)
         print "WS close"
 
 class MainHandler(tornado.web.RequestHandler):
     
     def get(self):
-        data = [list(a) for a in zip(r,linspace(-5e+4,5e+12,CHUNK*2))]
+        data = [list(a) for a in zip(r,linspace(-5e+4,5e+12,ar.CHUNK*2))]
         self.render("html/index.html", 
                     title="AFM-Calibrator", 
                     data = data,
-                    xmax = CHUNK*2,
-                    mRate = RATE/2,
+                    xmax = ar.CHUNK*2,
+                    mRate = ar.RATE/2,
                     avgT = 2,
                     kc = 0,
                     niR = 0,
