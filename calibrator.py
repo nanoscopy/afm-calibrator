@@ -8,15 +8,8 @@ except ImportError:
 
 import signal, sys, threading, platform, time
 
-
-
-if len(sys.argv) >= 3:
-    if sys.argv[2] == 'simulate':
-        from nanoscopy import simulated_tornado_server as tornado_server
-    else:
-        from nanoscopy import tornado_server
-else: 
-    from nanoscopy import tornado_server
+ 
+from nanoscopy import tornado_server
 
 try:
     tornado_server.port=int(sys.argv[1])
@@ -44,6 +37,7 @@ else:
     def signal_handler(signal, frame):
         print 'exiting'
         tornado_server.stop()
+        print 'before exit'
         sys.exit(0)
 
     signal.signal(signal.SIGINT, signal_handler)

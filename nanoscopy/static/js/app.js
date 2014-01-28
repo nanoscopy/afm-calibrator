@@ -22,7 +22,9 @@ function openWS(){
 		msg = JSON.parse(evt.data);
 		if (options.fft)
 		{
-			var corr = maxFreq/(xmax/2); //il fattore ha 'dimensioni' frequenza/indice
+			var corr = fmax/(xmax/4); //il fattore ha 'dimensioni' frequenza/indice
+			//console.log(xmax);
+			//console.log(fmax);
 			
 			if(msg.draw){
 				plot.getOptions().xaxes[0].min = 5;
@@ -182,6 +184,19 @@ $('#avgTime').keyup(updateAvgTime);
 
 $('#simul').change(function(){
 		options.simul = $('#simul').is(':checked');
+		if (options.simul)
+		{
+			xmax = xmaxS;
+			fmax = maxFreqS;
+			options.xmax = xmaxS;
+		}
+		else
+		{
+			xmax = xmax2;
+			fmax = maxFreq;
+			options.xmax = xmax2;
+		}
+		
 		if(ws)
 			ws.send(JSON.stringify(options));
 	}

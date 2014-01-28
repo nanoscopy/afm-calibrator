@@ -33,10 +33,10 @@ class AudioReader(Thread):
         self.CHUNKs = chunkS
         self.simulCount = 0
         self.simulFile = dfl.qrtaiFile(dataFile)
-        self.CHUNK = CHUNK
+        self.CHUNK = chunk
         self.FORMAT = FORMAT
         self.CHANNELS = CHANNELS
-        self.RATE = RATE
+        self.RATE = rate
         
     def pause(self):
         self.active = False
@@ -52,6 +52,7 @@ class AudioReader(Thread):
             self.play()
         self.active = False
         self.quit = True
+        print 'Audio stopping'
 
     def readData(self):
         
@@ -87,19 +88,6 @@ class AudioReader(Thread):
                 
         self.stream.close()
         
-        
-    def readSimulatedData(self):
-        
-        self.condition.acquire()
-        self.condition.wait()
-        self.condition.release()
-        
-        while self.active:
-            
-                
-            for l in self.simulListeners:
-                l(data)
-        
 
     def readRemoteData(self):
         
@@ -131,10 +119,10 @@ class AudioReader(Thread):
         
 
     def run(self):
+        print 'Self.quit: ' + str(self.quit)
         while not self.quit:
             if not self.remote:               
                 self.readData()
-                self.readSimulatedData()
             else:
                 self.readRemoteData()
             

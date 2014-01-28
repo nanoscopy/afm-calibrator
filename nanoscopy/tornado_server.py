@@ -158,7 +158,7 @@ class SocketHandler(websocket.WebSocketHandler):
         self.downsampling = options['downsampling']
         self.fft = options['fft']
         self.xmin = options['xmin']
-       # self.xmax = options['xmax']
+        self.xmax = options['xmax']
         self.ro = options['ro']
         self.eta = options['eta']/1e+5
         self.b = options['b']/1e+6
@@ -183,6 +183,10 @@ class SocketHandler(websocket.WebSocketHandler):
                 self.xmax = ar.CHUNK*2
 
         self.simul = options['simul']
+        if self.simul:
+            self.acqCountMax = ar.RATEs/ar.CHUNKs*self.avgT
+        else:
+            self.acqCountMax = ar.RATE/ar.CHUNK*self.avgT
             
         if self.xmin == 0 and self.xmax == ar.CHUNKs*2 if self.simul else ar.CHUNK*2:
             self.d2 = []
@@ -217,10 +221,11 @@ class SocketHandler(websocket.WebSocketHandler):
         
         
     def on_close(self):
-        try:
-            ar.listeners.remove(self.data_listener)
-        except:
-            ar.simulListeners.remove(self.data_listener_sim)
+        for l in ar.listeners:
+            ar.listeners.remove(l)
+        for ls in ar.simulListeners:
+            ar.simulListeners.remove(ls)
+            
         print "WS close"
 
 class MainHandler(tornado.web.RequestHandler):
@@ -231,7 +236,9 @@ class MainHandler(tornado.web.RequestHandler):
                     title="AFM-Calibrator", 
                     data = data,
                     xmax = ar.CHUNK*2,
+                    xmaxS = ar.CHUNKs*2,
                     mRate = ar.RATE/2,
+                    mRateS = ar.RATEs/2,
                     avgT = 2,
                     kc = 0,
                     niR = 0,
@@ -252,5 +259,8 @@ def start():
     ar.play()
     tornado.ioloop.IOLoop.instance().start()
 def stop():
+    print 'Stopping'
     ar.stop()
+    print 'Out AR'
     tornado.ioloop.IOLoop.instance().stop()
+    print 'After ioloop stop'
