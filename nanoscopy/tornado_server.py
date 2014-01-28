@@ -106,12 +106,12 @@ class SocketHandler(websocket.WebSocketHandler):
                 data = abs(fft(data))**2
                 self.dataSum += data
                 self.acqCount += 1
-                print self.acqCount
-                print self.acqCountMax
-                print self.acqCount == self.acqCountMax
-                print self.xmax
-                print ar.CHUNKs
-                print self.xmin
+                #print self.acqCount
+                #print self.acqCountMax
+                #print self.acqCount == self.acqCountMax
+                #print self.xmax
+                #print ar.CHUNKs
+                #print self.xmin
                 self.drawFFT = False
                 data = self.dataSum/self.acqCount
                 data = data[0:len(data)/2]
@@ -119,7 +119,6 @@ class SocketHandler(websocket.WebSocketHandler):
                     self.acqCount = 0
                     self.dataSum = np.zeros(ar.CHUNKs)+0.0001
                     self.drawFFT = True
-                    print 'ciao'
     
             if (self.xmin>0 or self.xmax<ar.CHUNKs*2) and self.acqCount >= self.acqCountMax:
                 self.d2 = []
@@ -127,7 +126,6 @@ class SocketHandler(websocket.WebSocketHandler):
                 self.drawFFT = True
                 self.acqCount = 0
                 self.dataSum = np.zeros(ar.CHUNKs)+0.0001
-                print 'pippo'
             
             if self.downsampling > 1:
                 data = data[::self.downsampling]
@@ -168,13 +166,12 @@ class SocketHandler(websocket.WebSocketHandler):
             self.acqCount = 0
             self.dataSum = []
             if options['simul']:
-                print 'ciao'
                 ar.listeners.remove(self.data_listener)
                 ar.simulListeners.append(self.data_listener_sim)
                 self.dataSum = np.zeros(ar.CHUNKs)+0.0001
                 self.acqCountMax = ar.RATEs/ar.CHUNKs*self.avgT
                 self.xmax = ar.CHUNKs*2
-                print self.xmax
+                #print self.xmax
             else:
                 ar.simulListeners.remove(self.data_listener_sim)
                 ar.listeners.append(self.data_listener)
@@ -259,8 +256,8 @@ def start():
     ar.play()
     tornado.ioloop.IOLoop.instance().start()
 def stop():
-    print 'Stopping'
+    #print 'Stopping'
     ar.stop()
-    print 'Out AR'
+    #print 'Out AR'
     tornado.ioloop.IOLoop.instance().stop()
-    print 'After ioloop stop'
+    #print 'After ioloop stop'

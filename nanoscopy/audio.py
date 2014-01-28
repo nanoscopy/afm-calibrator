@@ -13,6 +13,8 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
 
+conditionOn = False
+
 class AudioReader(Thread):
 
     def __init__(self, raw = False, remote = False, dataFile = None, host = 'localhost', port = 9999, chunk = CHUNK, rate = RATE, chunkS = 2500, rateS = 40000):
@@ -43,22 +45,24 @@ class AudioReader(Thread):
     
     def play(self):
         self.active = True
-        self.condition.acquire()
-        self.condition.notify()
-        self.condition.release()
+        if conditionOn:
+            self.condition.acquire()
+            self.condition.notify()
+            self.condition.release()
     
     def stop(self):
         if not self.active:
             self.play()
         self.active = False
         self.quit = True
-        print 'Audio stopping'
+        #print 'Audio stopping'
 
     def readData(self):
         
-        self.condition.acquire()
-        self.condition.wait()
-        self.condition.release()
+        if conditionOn:
+            self.condition.acquire()
+            self.condition.wait()
+            self.condition.release()
         
         self.stream = pyaudio.PyAudio().open(format=self.FORMAT, 
             channels=self.CHANNELS, 
@@ -91,9 +95,10 @@ class AudioReader(Thread):
 
     def readRemoteData(self):
         
-        self.condition.acquire()
-        self.condition.wait()
-        self.condition.release()
+        if conditionOn:
+            self.condition.acquire()
+            self.condition.wait()
+            self.condition.release()
         
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.host, self.port))
@@ -119,7 +124,7 @@ class AudioReader(Thread):
         
 
     def run(self):
-        print 'Self.quit: ' + str(self.quit)
+        #print 'Self.quit: ' + str(self.quit)
         while not self.quit:
             if not self.remote:               
                 self.readData()
