@@ -8,7 +8,7 @@ import socket
 CHUNK = 2**12
 
 FORMAT = pyaudio.paInt16
-CHANNELS = 2
+CHANNELS = 1
 RATE = 44100
 
 class AudioReader(Thread):
