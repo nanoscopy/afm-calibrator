@@ -4,12 +4,11 @@ try:
     import numpy, scipy, pyaudio, tornado
 except ImportError:
     print "numpy, scipy, pyaudio and tornado are required to run the calibrator"
+    pass
 
 import signal, sys, threading, platform, time
 
-
-
-
+ 
 from nanoscopy import tornado_server
 
 try:
@@ -38,6 +37,7 @@ else:
     def signal_handler(signal, frame):
         print 'exiting'
         tornado_server.stop()
+        print 'before exit'
         sys.exit(0)
 
     signal.signal(signal.SIGINT, signal_handler)
