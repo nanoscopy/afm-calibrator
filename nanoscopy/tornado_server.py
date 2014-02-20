@@ -64,7 +64,7 @@ class SocketHandler(websocket.WebSocketHandler):
                 data = data[0:len(data)/2]
                 if (self.acqCount >= self.acqCountMax) and (self.xmin==0 and self.xmax==ar.CHUNK*2):
                     self.acqCount = 0
-                    self.dataSum = np.zeros(ar.CHUNK)+0.0001
+                    self.dataSum = np.zeros(ar.CHUNK/2)+0.0001
                     self.drawFFT = True
     
             if (self.xmin>0 or self.xmax<ar.CHUNK*2) and self.acqCount >= self.acqCountMax:
@@ -72,7 +72,7 @@ class SocketHandler(websocket.WebSocketHandler):
                 self.Q,self.niR,self.kc,self.d2 = self.work_on_d(data,'real')
                 self.drawFFT = True
                 self.acqCount = 0
-                self.dataSum = np.zeros(ar.CHUNK)+0.0001
+                self.dataSum = np.zeros(ar.CHUNK/2)+0.0001
             
             if self.downsampling > 1:
                 data = data[::self.downsampling]
@@ -175,7 +175,7 @@ class SocketHandler(websocket.WebSocketHandler):
             else:
                 ar.simulListeners.remove(self.data_listener_sim)
                 ar.listeners.append(self.data_listener)
-                self.dataSum = np.zeros(ar.CHUNK)+0.0001
+                self.dataSum = np.zeros(ar.CHUNK/2)+0.0001
                 self.acqCountMax = ar.RATE/ar.CHUNK*self.avgT
                 self.xmax = ar.CHUNK*2
 
@@ -211,7 +211,7 @@ class SocketHandler(websocket.WebSocketHandler):
         self.b = bP
         self.L = LP
         self.drawFFT = False
-        self.dataSum = np.zeros(ar.CHUNK)
+        self.dataSum = np.zeros(ar.CHUNK/2)
         self.simul = False
         ar.listeners.append(self.data_listener)
         print "WS open"
