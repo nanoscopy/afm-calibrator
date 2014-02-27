@@ -5,6 +5,10 @@ var xmax = options.xmax;
 
 var fmax = maxFreq;
 
+var simulMe = $('#simul').is(':checked');
+
+options.simul = simulMe
+
 $('#Ymin').val('-3.3e+4');
 $('#Ymax').val('3.3e+4');
 
@@ -20,6 +24,7 @@ function openWS(){
 	ws = new WebSocket("ws://"+window.location.host+"/ws");
 	ws.onmessage = _.throttle(function (evt) {
 		msg = JSON.parse(evt.data);
+		ws.send(JSON.stringify(options));
 		if (options.fft)
 		{
 			var corr = fmax/(xmax/4); //il fattore ha 'dimensioni' frequenza/indice
