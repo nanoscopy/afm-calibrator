@@ -5,12 +5,36 @@ var xmax = options.xmax;
 
 var fmax = maxFreq;
 
-var simulMe = $('#simul').is(':checked');
+options.fft = $('#fft').is(':checked');
 
-options.simul = simulMe
+function changePlotY(){
+	if ($('#fft').is(':checked'))
+		{
+			if (options.simul){
+				$('#Ymin').val('1e-2');
+				$('#Ymax').val('1e+3');
+			}
+			else{
+				$('#Ymin').val('1e+4');
+				$('#Ymax').val('1e+16');
+			}
+	
+		}
+		else
+		{
+			if (options.simul){
+				$('#Ymin').val('-2e-1');
+				$('#Ymax').val('2e-1');
+			}
+			else{
+				$('#Ymin').val('-3.3e+4');
+				$('#Ymax').val('3.3e+4');
+			}
 
-$('#Ymin').val('-3.3e+4');
-$('#Ymax').val('3.3e+4');
+		}
+}
+
+changePlotY();
 
 function roundMe(valore, decimali){
 	return Math.round(valore*Math.pow(10,decimali))/Math.pow(10,decimali);
@@ -202,6 +226,8 @@ $('#simul').change(function(){
 			options.xmax = xmax2;
 		}
 		
+		changePlotY();
+		
 		if(ws)
 			ws.send(JSON.stringify(options));
 	}
@@ -209,16 +235,7 @@ $('#simul').change(function(){
 
 $('#fft').change(function(){
 		options.fft = $('#fft').is(':checked');
-		if ($('#fft').is(':checked'))
-		{
-			$('#Ymin').val('1e+4');
-			$('#Ymax').val('1e+16');
-		}
-		else
-		{
-			$('#Ymin').val('-3.3e+4');
-			$('#Ymax').val('3.3e+4');
-		}
+		changePlotY();		
 		if(ws)
 			ws.send(JSON.stringify(options));
 	}
