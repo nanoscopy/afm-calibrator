@@ -30,6 +30,10 @@ port = 8888
 class SocketHandler(websocket.WebSocketHandler):
     
     def work_on_d(self, data, dad):
+        '''
+        This function fit the data contained in the "data" variables and then calculates the cantilever elastic constant, It is called by "data_listener"
+        
+        '''
         
         mioNI = NI if dad=='real' else NIs
         mioR = r if dad=='real' else rs
@@ -69,7 +73,7 @@ class SocketHandler(websocket.WebSocketHandler):
     
             if (self.xmin>0 or self.xmax<ar.CHUNK*2) and self.acqCount >= self.acqCountMax:
                 self.d2 = []
-                self.Q,self.niR,self.kc,self.d2 = self.work_on_d(data,'real')
+                self.Q,self.niR,self.kc,self.d2 = self.work_on_d(data,'real') # here the server calls the function that performs the data fitting and also caluclates the elastic constant k
                 self.drawFFT = True
                 self.acqCount = 0
                 self.dataSum = np.zeros(ar.CHUNK/2)+0.0001

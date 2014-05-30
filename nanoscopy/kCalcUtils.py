@@ -10,12 +10,18 @@ etaAria = 1.86*(10**-5)
 def buildNI(T,dt):
     
     # Crea l'array di frequenze a partire dalla durata della misura T e dal tempo di campionamento dt
+    '''
+    This function creates the frequencies array for the acquired spectrum, using the measurements duration T and the sampling time dt
+    '''
     
     return np.arange((1/T),(1/dt+1/T),(1/T))
 
 
 def OMr(Re):
     # Parte reale della funzione di correzione per la funzione gamma circolare applicata a cantilever a sezione rettangolare
+    '''
+    This function calculates the real part of the correction for the gamma function applied to a cantilever with rectangular section
+    '''
 
     tau = np.log10(Re)
     num = 0.91324 - 0.48274 * tau + 0.46842 * (tau**2) - 0.12886 * (tau**3) + 0.044055 * (tau**4) - 0.0035117 * (tau**5) + 0.00069085 * (tau**6)
@@ -26,6 +32,9 @@ def OMr(Re):
 
 def OMi(Re):
     # Parte immaginaria della funzione di correzione
+    '''
+    This function calculates the imaginary part of the correction for the gamma function applied to a cantilever with rectangular section
+    '''
     
     tau = np.log10(Re)
     
@@ -39,6 +48,10 @@ def gammaCirc(ni, Re):
     
     # Funzione idrodinamica per cantilever a sezione circolare
     
+    '''
+    This function calculates the idrodynamic gamma function for a cantilever with circular section
+    '''
+    
     Re = np.sqrt(Re/2) - 1j*np.sqrt(Re/2)
     
     num = 4*sx.kv(1,Re)
@@ -50,6 +63,9 @@ def gammaCirc(ni, Re):
 def gamma(ni,Re):
     
     # Funzione idrodinamica per cantilever a sezione rettangolare
+    '''
+    This function simply returns the complete complex values for the corrected gamma function
+    '''
     
     return gammaCirc(ni,Re)*(OMr(Re)+1j*OMi(Re))
 
@@ -57,6 +73,10 @@ def gamma(ni,Re):
 def PRF(NI,Pwhite,Pdc,niR,Q):
     
     # Funzione di fit dello spettro (Power Response Function per oscillatore armonico semplice)
+    '''
+    This function fits the acquired spectrum with the power response function for a simple harmonic oscillator
+    '''
+    
     
     num = Pdc*(niR**4)
     den = (NI**2-niR**2)**2+((NI*niR)**2)/(Q**2)
@@ -67,6 +87,9 @@ def PRF(NI,Pwhite,Pdc,niR,Q):
 def initFit(NI,Spectrum):
     
     # Inizializzazione dei parametri di fit
+    '''
+    This function initializes the fitting parameters
+    '''
     
     indMax = np.argmax(Spectrum)
     niRstart = NI[indMax]
@@ -88,6 +111,9 @@ def initFit(NI,Spectrum):
     
 def GETparams(NI, Spectrum, T = None):
     
+    '''
+    Performs the fitting on the acquired spectrum
+    '''
     # Calcolo dei parametri, necessari per determinare il valore di k, tramite il fit dello spettro 
     # di densita' di potenza
     
@@ -107,6 +133,9 @@ def GETparams(NI, Spectrum, T = None):
 
 def GETQtrue(niR,deltaF,Qmeas):
     
+    '''
+    This function corrects the Q value since it is affected by the finite frequency resolution of the spectrum 
+    '''
     # Correzione del fattore di qualita' per ovviare alle limitazioni dovute alla risoluzione finita 
     # in frequenza dello spettro di densita' di potenza 
     
@@ -117,6 +146,10 @@ def GETQtrue(niR,deltaF,Qmeas):
     
 
 def GETk(roF,b,L,Qtrue,niR,eta):
+    
+    '''
+    This function calculates the elastic constant value
+    '''
     
     # Calcolo del valore di k a partire dai parametri ricavati dal fit dello spettro
     
