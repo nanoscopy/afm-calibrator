@@ -12,6 +12,13 @@ def buildNI(T,dt):
     # Crea l'array di frequenze a partire dalla durata della misura T e dal tempo di campionamento dt
     '''
     This function creates the frequencies array for the acquired spectrum, using the measurements duration T and the sampling time dt
+    
+    Input:
+    T = measurement duration
+    dt = sampling time
+    
+    Output:
+    Frequencies array in Hz
     '''
     
     return np.arange((1/T),(1/dt+1/T),(1/T))
@@ -21,6 +28,12 @@ def OMr(Re):
     # Parte reale della funzione di correzione per la funzione gamma circolare applicata a cantilever a sezione rettangolare
     '''
     This function calculates the real part of the correction for the gamma function applied to a cantilever with rectangular section
+    
+    Input:
+    Re = Reynolds number
+    
+    Output:
+    Real part of the correction for the gamma function
     '''
 
     tau = np.log10(Re)
@@ -34,6 +47,12 @@ def OMi(Re):
     # Parte immaginaria della funzione di correzione
     '''
     This function calculates the imaginary part of the correction for the gamma function applied to a cantilever with rectangular section
+    
+    Input:
+    Re = Reynolds number
+    
+    Output:
+    Imaginary part of the correction for the gamma function
     '''
     
     tau = np.log10(Re)
@@ -50,6 +69,13 @@ def gammaCirc(ni, Re):
     
     '''
     This function calculates the idrodynamic gamma function for a cantilever with circular section
+    
+    Input:
+    ni = frequency in Hz
+    Re = Reynolds number
+    
+    Output:
+    Gamma function value
     '''
     
     Re = np.sqrt(Re/2) - 1j*np.sqrt(Re/2)
@@ -64,7 +90,14 @@ def gamma(ni,Re):
     
     # Funzione idrodinamica per cantilever a sezione rettangolare
     '''
-    This function simply returns the complete complex values for the corrected gamma function
+    This function returns the corrected gamma function
+    
+    Input:
+    ni = frequency in Hz
+    Re = Reynolds number
+    
+    Output:
+    Corrected gamma function value
     '''
     
     return gammaCirc(ni,Re)*(OMr(Re)+1j*OMi(Re))
@@ -74,7 +107,17 @@ def PRF(NI,Pwhite,Pdc,niR,Q):
     
     # Funzione di fit dello spettro (Power Response Function per oscillatore armonico semplice)
     '''
-    This function fits the acquired spectrum with the power response function for a simple harmonic oscillator
+    This is an implementation of the function used to fit the acquired spectrum.
+    
+    Input:
+    NI = frequencies array in Hz
+    Pwhite = white noise floor
+    Pdc = dc power response
+    niR = cantilever resonance frequency
+    Q = quality factor
+    
+    Outpu:
+    Fitting function values (array)
     '''
     
     
@@ -89,6 +132,17 @@ def initFit(NI,Spectrum):
     # Inizializzazione dei parametri di fit
     '''
     This function initializes the fitting parameters
+    
+    Input:
+    NI = frequencies array in Hz
+    Spectrum = data to be fitted
+    
+    Output:
+    PWStart = white noise floor
+    PdcStart = dc power response
+    niRstart = cantilever resonance frequency
+    Qstart = quality factor
+    
     '''
     
     indMax = np.argmax(Spectrum)
@@ -113,6 +167,17 @@ def GETparams(NI, Spectrum, T = None):
     
     '''
     Performs the fitting on the acquired spectrum
+    
+    Input:
+    NI = frequencies array in Hz
+    Spectrum = data to be fitted
+    T = measurements duration, used to correct the measured Q value. If it's none, Q will not be corrected.
+    
+    Output:
+    PW = white noise floor
+    Pdc = dc power response
+    niR = cantilever resonance frequency
+    Q = quality factor
     '''
     # Calcolo dei parametri, necessari per determinare il valore di k, tramite il fit dello spettro 
     # di densita' di potenza
@@ -134,7 +199,15 @@ def GETparams(NI, Spectrum, T = None):
 def GETQtrue(niR,deltaF,Qmeas):
     
     '''
-    This function corrects the Q value since it is affected by the finite frequency resolution of the spectrum 
+    This function corrects the Q value since it is affected by the finite frequency resolution of the spectrum
+    
+    Input:
+    niR = cantilever resonance frequency
+    Qmeas = measured quality factor
+    deltaF = spectrum frequency resolution
+    
+    Output:
+    Corrected quality factor
     '''
     # Correzione del fattore di qualita' per ovviare alle limitazioni dovute alla risoluzione finita 
     # in frequenza dello spettro di densita' di potenza 
@@ -149,6 +222,18 @@ def GETk(roF,b,L,Qtrue,niR,eta):
     
     '''
     This function calculates the elastic constant value
+    
+    Input:
+    roF = medium density
+    b = cantilever width
+    L = cantilever length
+    Qtrue = Corrected quality factor (it doesn't really need to be the corrected one, but for precision sake it's better not to use the measured one)
+    niR = cantilever resonance frequency
+    eta = medium viscousness
+    
+    Output:
+    k = cantilever elastic constant
+    
     '''
     
     # Calcolo del valore di k a partire dai parametri ricavati dal fit dello spettro
