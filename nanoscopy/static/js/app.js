@@ -51,19 +51,22 @@ function openWS(){
 		ws.send(JSON.stringify(options));
 		if (options.fft)
 		{
-			var corr = fmax/(xmax/4); //il fattore ha 'dimensioni' frequenza/indice
+			var corr = fmax/(xmax/2); //il fattore ha 'dimensioni' frequenza/indice
 			//console.log(xmax);
 			//console.log(fmax);
 			
 			if(msg.draw){
 				plot.getOptions().xaxes[0].min = 5;
+				plot.getOptions().xaxes[0].max = 20480/options.downsampling;
 				plot.getOptions().xaxes[0].ticks = [[1,roundMe(corr,2)],[10,roundMe(10*corr,2)],[20,roundMe(20*corr,2)],[40,roundMe(40*corr,2)],
-				[80,roundMe(80*corr,2)],[160,roundMe(160*corr,2)],[320,roundMe(320*corr,2)],[640,roundMe(640*corr,2)],[1280,roundMe(1280*corr,2)],
-				[2560,roundMe(2560*corr,2)]];
+				[80,roundMe(80*corr,2)],[160,roundMe(160*corr,2)],[320,roundMe(320*corr,2)],[640,roundMe(640*corr,2)]];//,[1280,roundMe(1280*corr,2)]];//,
+				//[2560,roundMe(2560*corr,2)]];
 				plot.getOptions().yaxes[0].ticks = [$('#Ymin').val(),1e+6,1e+7,1e+8,1e+9,1e+10,1e+11,1e+12,1e+13,1e+14,1e+15];
 				plot.getOptions().yaxes[0].min = $('#Ymin').val();
 				plot.getOptions().yaxes[0].max = $('#Ymax').val();
 				plot.setData(msg.data);
+				//console.log(plot.getOptions().xaxes[0].max);
+				console.log(msg.data[0].length);
 				plot.setupGrid();
 				plot.draw();
 			}
@@ -107,7 +110,7 @@ $('#flot').bind("plotunselected", function (event, ranges) {
 
 var plot = $.plot("#flot", [d1], {
 		xaxis: {transform:  function(v) {
-					if ($('#fft').is(':checked')) return mioLog(v+0.001);
+					if ($('#fft').is(':checked')) return mioLog(v+0.00001);
 					else return v;
 				} ,
 				inverseTransform:  function(v) {
