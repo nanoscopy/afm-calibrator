@@ -1,40 +1,33 @@
 var ws = null;
 var plot = null;
+var newWs = true;
 
+var xmin = options.xmin;
 var xmax = options.xmax;
+var ymin = options.ymin;
+var ymax = options.ymax;
+var simul = options.simul;
+var fft = options.fft;
 
 var fmax = maxFreq;
 
+$('#Ymin').val(ymin);
+$('#Ymax').val(ymax);
+var mode = null;
+
 options.fft = $('#fft').is(':checked');
+options.simul = $('#simul').is(':checked');
+options.autoScale = $('#autoScaleOn').is(':checked');
 
-function changePlotY(){
-	if ($('#fft').is(':checked'))
-		{
-			if (options.simul){
-				$('#Ymin').val('1e-2');
-				$('#Ymax').val('1e+3');
-			}
-			else{
-				$('#Ymin').val('1e+4');
-				$('#Ymax').val('1e+16');
-			}
-	
-		}
-		else
-		{
-			if (options.simul){
-				$('#Ymin').val('-2e-1');
-				$('#Ymax').val('2e-1');
-			}
-			else{
-				$('#Ymin').val('-3.3e+4');
-				$('#Ymax').val('3.3e+4');
-			}
-
-		}
+function enableInputs(flag)
+{
+    $('#downsampling').prop('disabled', !flag); 
+    $('#avgTime').prop('disabled', !flag); 
+    $('#b').prop('disabled', !flag);     
+    $('#L').prop('disabled', !flag); 
+    $('#ro').prop('disabled', !flag);     
+    $('#eta').prop('disabled', !flag); 
 }
-
-changePlotY();
 
 function roundMe(valore, decimali){
 	return Math.round(valore*Math.pow(10,decimali))/Math.pow(10,decimali);
@@ -45,72 +38,154 @@ function mioLog(valore){
 }
 
 function openWS(){
+    if (ws === null)
+    {
 	ws = new WebSocket("ws://"+window.location.host+"/ws");
+   
 	ws.onmessage = _.throttle(function (evt) {
-		msg = JSON.parse(evt.data);
-		ws.send(JSON.stringify(options));
-		if (options.fft)
-		{
-			var corr = fmax/(xmax/2); //il fattore ha 'dimensioni' frequenza/indice
-			//console.log(xmax);
-			//console.log(fmax);
-			
-			if(msg.draw){
-				plot.getOptions().xaxes[0].min = 5;
-				plot.getOptions().xaxes[0].max = 20480/options.downsampling;
-				plot.getOptions().xaxes[0].ticks = [[1,roundMe(corr,2)],[10,roundMe(10*corr,2)],[20,roundMe(20*corr,2)],[40,roundMe(40*corr,2)],
-				[80,roundMe(80*corr,2)],[160,roundMe(160*corr,2)],[320,roundMe(320*corr,2)],[640,roundMe(640*corr,2)]];//,[1280,roundMe(1280*corr,2)]];//,
-				//[2560,roundMe(2560*corr,2)]];
-				plot.getOptions().yaxes[0].ticks = [$('#Ymin').val(),1e+6,1e+7,1e+8,1e+9,1e+10,1e+11,1e+12,1e+13,1e+14,1e+15];
-				plot.getOptions().yaxes[0].min = $('#Ymin').val();
-				plot.getOptions().yaxes[0].max = $('#Ymax').val();
-				plot.setData(msg.data);
-				//console.log(plot.getOptions().xaxes[0].max);
-				console.log(msg.data[0].length);
-				plot.setupGrid();
-				plot.draw();
-			}
-		}
-		else
-		{
-			var max = xmax;
-			plot.getOptions().xaxes[0].ticks = [0, max/10, 2*max/10, 2*max/10, 3*max/10, 4*max/10, 5*max/10, 6*max/10, 7*max/10, 8*max/10, 9*max/10];
-			plot.getOptions().yaxes[0].ticks = [-30000,-20000,-10000,0,10000,20000,30000];
-			plot.getOptions().yaxes[0].min = $('#Ymin').val();
-			plot.getOptions().yaxes[0].max = $('#Ymax').val();
-			plot.setData(msg.data);
-			plot.setupGrid();
-			plot.draw();
-		}
-		$('#kCalc').val(msg.kc);
-		$('#niR').val(msg.niR);
-		$('#Qfact').val(msg.Q);
+            msg = JSON.parse(evt.data);
+            xmin = msg.xmin;
+            xmax = msg.xmax;
+            options.xmin = msg.xmin*2;
+            options.xmax = msg.xmax*2;
+            
+            if (newWs)
+            {
+                newWs = false;
+            }
+            po = plot.getOptions();
+            if (options.fft)
+            {
+                if (options.autoScale)
+                {
+                    ymin = msg.ymin;
+                    ymax = msg.ymax;
+                }
+                else if (!options.fit)
+                {
+                    ymin = $('#Ymin').val();
+                    ymax = $('#Ymax').val();
+                    ymin = parseFloat(ymin);
+                    ymax = parseFloat(ymax);
+                }
+                var corr = fmax/(xmax/4); //il fattore ha 'dimensioni' frequenza/indice
+                                          // factor has 'size' Frequency / Index
+                corr = 1;
+
+                if(msg.draw)
+                {
+                    if (xmin < 1)
+                    {
+                       po.xaxes[0].min = 1;
+                    }
+                    else
+                    {
+                       po.xaxes[0].min = xmin;
+                    }
+                    po.xaxes[0].max = xmax;
+                    po.xaxes[0].ticks = [[1,roundMe(corr,2)],[10,roundMe(10*corr,2)],[20,roundMe(20*corr,2)],[40,roundMe(40*corr,2)],
+                    [80,roundMe(80*corr,2)],[160,roundMe(160*corr,2)],[320,roundMe(320*corr,2)],[640,roundMe(640*corr,2)],[1280,roundMe(1280*corr,2)],
+                    [2560,roundMe(2560*corr,2)]];
+                    po.yaxes[0].ticks = [$('#Ymin').val(),1e-4,1e-3,1e-2,1e-1,1,1e+1,1e+2,1e+3,1e+4,1e+5,1e+6,1e+7,1e+8,1e+9,1e+10,1e+11,1e+12,1e+13,1e+14,1e+15];
+                    po.yaxes[0].min = ymin;
+                    po.yaxes[0].max = ymax;
+
+                    plot.setData(msg.data);
+                    plot.setupGrid();
+                    plot.draw();
+                }
+            }
+            else
+            {
+                if (options.autoScale)
+                {
+                    ymin = msg.ymin;
+                    ymax = msg.ymax;
+                    fivePercent = (ymax - ymin) / 20;
+                    ymin -= fivePercent;
+                    ymax += fivePercent;
+                }
+                else if (!options.fit)
+                {
+                    ymin = $('#Ymin').val();
+                    ymax = $('#Ymax').val();
+                    ymin = parseFloat(ymin);
+                    ymax = parseFloat(ymax);
+                }
+                var xstep = (xmax - xmin) / 5;
+                var ystep = (ymax - ymin) / 5;
+                po.xaxes[0].ticks = [xmin, xmin+xstep, xmin+2*xstep, xmin+3*xstep, xmin+4*xstep, xmax];
+                po.yaxes[0].ticks = [ymin, ymin+ystep, ymin+2*ystep, ymin+3*ystep, ymin+4*ystep, ymax];
+                po.yaxes[0].min = ymin;
+                po.yaxes[0].max = ymax;
+                po.xaxes[0].min = xmin;
+                po.xaxes[0].max = xmax;
+                
+                plot.setData(msg.data);
+                plot.setupGrid();
+                plot.draw();
+            }
+            $('#kCalc').val(msg.kc);
+            $('#niR').val(msg.niR);
+            $('#Qfact').val(msg.Q);
 	},100);
+        ws.onopen = function()
+        {
+            if (options.fft)
+            {
+                enableInputs(false);
+            }
+           // Web Socket is connected, send data using send()
+           ws.send(JSON.stringify(options));
+        };
+    }
 }
 	
 function closeWS(){
-	ws.close();
+    newWs = true;
+    ws.close();
+    ws = null;
+    enableInputs(true);
 }
 
-$('#flot').bind("plotselected", function (event, ranges) {	
-		options.xmin = parseInt(ranges.xaxis.from);
-		options.xmax = parseInt(ranges.xaxis.to);
-		if (ws)
-			ws.send(JSON.stringify(options));
-	}
+$('#flot').bind("plotselected",
+    function (event, ranges)
+    {
+        if (options.fit)
+        {
+            options.fitmin = parseInt(ranges.xaxis.from);
+            options.fitmax = parseInt(ranges.xaxis.to);
+        }
+        else
+        {
+            options.xmin = parseInt(ranges.xaxis.from)*2;
+            options.xmax = parseInt(ranges.xaxis.to)*2;
+            if (!options.autoScale)
+            {
+               $('#Ymin').val(parseFloat(ranges.yaxis.from).toPrecision(3));
+               $('#Ymax').val(parseFloat(ranges.yaxis.to).toPrecision(3));
+            }
+        }
+        if (ws)
+            ws.send(JSON.stringify(options));
+    }
 );
 
-$('#flot').bind("plotunselected", function (event, ranges) {	
-		options.xmin = 0;
-		options.xmax = xmax;
-		if (ws)
-			ws.send(JSON.stringify(options));
-	}
+$('#flot').bind("plotunselected",
+    function (event, ranges)
+    {
+        options.xmin = xmin;
+        options.xmax = xmax;
+        options.ymin = ymin;
+        options.ymax = ymax;
+        if (ws)
+            ws.send(JSON.stringify(options));
+    }
 );
 
 var plot = $.plot("#flot", [d1], {
 		xaxis: {transform:  function(v) {
-					if ($('#fft').is(':checked')) return mioLog(v+0.00001);
+					if ($('#fft').is(':checked')) return mioLog(v+0.001);
 					else return v;
 				} ,
 				inverseTransform:  function(v) {
@@ -120,12 +195,12 @@ var plot = $.plot("#flot", [d1], {
 				tickDecimals: 2 ,
 				//scale: 0.15 ,
 				tickFormatter: function (v, axis) {
-					if ($('#fft').is(':checked')) return "10" + (Math.round(mioLog(v))).toString().sup();
-					else return v;
+					if ($('#fft').is(':checked')) return "10" + (Math.round(mioLog(v))).toPrecision(3).toString().sup();
+					else return v.toPrecision(3);
 				}
 			},
 		selection: {
-				mode: "x"
+                                mode: "xy"
 			},
 		yaxis: {transform:  function(v) {
 					if ($('#fft').is(':checked')) return mioLog(v);
@@ -137,8 +212,8 @@ var plot = $.plot("#flot", [d1], {
 				} ,
 				tickDecimals: 10 ,
 				tickFormatter: function (v, axis) {
-					if ($('#fft').is(':checked')) return "10" + (Math.round( mioLog(v))).toString().sup();
-					else return v;
+					if ($('#fft').is(':checked')) return "10" + (Math.round( mioLog(v))).toPrecision(3).toString().sup();
+					else return v.toPrecision(3);
 				}
 			},
 		
@@ -229,17 +304,75 @@ $('#simul').change(function(){
 			options.xmax = xmax2;
 		}
 		
-		changePlotY();
-		
 		if(ws)
 			ws.send(JSON.stringify(options));
 	}
 );
 
+
 $('#fft').change(function(){
 		options.fft = $('#fft').is(':checked');
-		changePlotY();		
+                $('#fitOn').prop('disabled', !options.fft);
+		
+		if(ws)
+                {
+                    if (options.fft)
+                    {
+                        enableInputs(false);
+                    }
+                    else
+                    {
+                        enableInputs(true);
+                    }
+                    ws.send(JSON.stringify(options));
+                }
+	}
+ );
+        
+$('#autoScaleOn').change(function(){
+                if (options.autoScale !== $('#autoScaleOn').is(':checked'))
+                {
+                    options.autoScale = $('#autoScaleOn').is(':checked');
+                    options.fit = $('#fitOn').is(':checked');
+                    options.xmin = xmin*2;
+                    options.xmax = xmax*2;
+                    mode = null;
+		
+                    if(ws)
+			ws.send(JSON.stringify(options));
+                }
+	}
+);
+
+$('#zoomOn').change(function(){
+		if (options.autoScale !== $('#autoScaleOn').is(':checked'))
+                {
+                options.autoScale = !$('#zoomOn').is(':checked');
+                options.fit = $('#fitOn').is(':checked');
+		
 		if(ws)
 			ws.send(JSON.stringify(options));
+                }
 	}
+);
+        
+$('#fitOn').change(function(){
+                if ($('#fft').is(':checked'))
+                {
+		   options.autoScale = !$('#fitOn').is(':checked');
+                   options.fit = $('#fitOn').is(':checked');
+		
+		   if(ws)
+                      ws.send(JSON.stringify(options));
+                }
+                else if (options.autoScale)
+                {
+		   $('#autoScaleOn').checked(true);                    
+                }
+                else
+                {
+                   $('#zoomOn').checked(true);
+                }
+	}
+                
 );

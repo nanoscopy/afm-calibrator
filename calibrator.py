@@ -1,4 +1,6 @@
+import os.path
 #!/usr/bin/python
+import os
 
 try:
     import numpy, scipy, pyaudio, tornado
@@ -8,14 +10,24 @@ except ImportError:
 
 import signal, sys, threading, platform, time
 
- 
 from nanoscopy import tornado_server
+    
+filePath = os.path.dirname(sys.argv[0])
+if filePath != "":
+    filePath+=os.sep
+    
+print "AFM tornado server V" + tornado_server.version
 
 try:
     tornado_server.port=int(sys.argv[1])
 except:
     pass
-        
+
+try:
+    tornado_server.filePath=filePath
+except:
+    pass      
+
 threading.Thread(target=tornado_server.start).start()
 
 if platform.system()=='Windows':

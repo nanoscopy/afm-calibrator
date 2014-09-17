@@ -3,7 +3,9 @@
   <head>
     <title>kWebCalib</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="static/css/bootstrap.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="static/css/bootstrap.css" type="text/css"/>
+
 
   </head>
   <body>
@@ -20,7 +22,7 @@
 		 			href="javascript:void(0)"
 		 			onclick="closeWS()"
 		 			>
-		 			<span class="glyphicon glyphicon-pause">
+		 			<span class="glyphicon glyphicon-pause" id="pause">
 		 				
 		 			</span>
 		 		</a>
@@ -28,10 +30,15 @@
 		 			href="javascript:void(0)"
 		 			onclick="openWS()"
 		 			>
-		 			<span class="glyphicon glyphicon-play">
+		 			<span class="glyphicon glyphicon-play" id="play">
 		 				
 		 			</span>
-		 		</a>
+ 		 		</a>                                   
+                                <a class="radio">
+                                <input type="radio" name="autoScale" id="autoScaleOn" value="On">Auto Scale<br>
+                                <input type="radio" name="autoScale" id="zoomOn" value="Off">Zoom<br>        
+                                <input type="radio" name="autoScale" id="fitOn" value="Off">Fit<br>        
+                                </a>
 		 		
 			</div>
 			
@@ -46,12 +53,12 @@
 				<h3 style="text-align:center;"><span class ="label label-warning">Settings</span></h3>
 			</div>
 			<div class="col-sm-3">
-				
 			</div>
 			<div class="col-sm-3">
 				<h3 style="text-align:center;"><span class ="label label-primary">Outputs</span></h3>
 			</div>
 		</div>
+
 		<div class="row">
 			<div class="col-sm-3">
 				<h4><span class ="label label-warning">Y-axis minimum</span></h4>
@@ -66,6 +73,7 @@
 				<h4><span class ="label label-primary">Elastic Constant[N/m]</span></h4>
 			</div>
 		</div>
+
 		<div class="row">
 			<div class="col-sm-3">
 				<div class ="input-group">
@@ -91,6 +99,7 @@
 				</div>
 			</div>
 		</div>
+
 		<div class="row">
 			<div class="col-sm-3">
 				<h4><span class ="label label-warning">Downsampling</span></h4>
@@ -99,12 +108,12 @@
 				<h4><span class ="label label-warning">FFT</span></h4>
 			</div>
 			<div class="col-sm-3">
-
 			</div>
 			<div class="col-sm-3">
 				<h4><span class ="label label-primary">Q factor</span></h4>
 			</div>
 		</div>
+
 		<div class="row">
 			<div class="col-sm-3">
 				<input type="text" id="downsampling" class ="form-control">
@@ -133,12 +142,12 @@
 				<h4><span class ="label label-warning">Simulate</span></h4>
 			</div>
 			<div class="col-sm-3">
-
 			</div>
 			<div class="col-sm-3">
 				<h4><span class ="label label-primary">Res. freq [Hz]</span></h4>
 			</div>
 		</div>
+
 		<div class="row">
 			<div class="col-sm-3">
 				<div class ="input-group">
@@ -177,6 +186,7 @@
 				
 			</div>
 		</div>
+
 		<div class="row">
 			<div class="col-sm-3">
 				<div class ="input-group">
@@ -238,23 +248,66 @@
 
   	</div>
   	
-  	<script>
+  	<script>           
 		var d1 = {{data}};
-
+                var simul = {{simul}};
+                var fft = {{fft}};
+                var play = {{play}};
+                var pause = {{pause}};
+                var autoScale = {{autoScale}};
+                var fit = {{fit}};
+                
+                elem = document.getElementById("simul");
+                elem.checked = (simul == 0) ? false : true;
+                elem = document.getElementById("fft");
+                elem.checked = (fft == 0) ? false : true;
+                
+                zoomOnElem = document.getElementById("zoomOn")
+                autoScaleOnElem = document.getElementById("autoScaleOn")
+                fitOnElem = document.getElementById("fitOn")
+    
+                autoScale = true
+                zoomOnElem.checked = false;
+                autoScaleOnElem.checked = true;
+                fitOnElem.checked = false;
+                fitOnElem.disabled = true;
+                
+                inputElem = document.getElementById("downsampling")
+                inputElem.disabled = false;
+                inputElem = document.getElementById("avgTime")
+                inputElem.disabled = false;
+                inputElem = document.getElementById("b")
+                inputElem.disabled = false;
+                inputElem = document.getElementById("L")
+                inputElem.disabled = false;
+                inputElem = document.getElementById("ro")
+                inputElem.disabled = false;
+                inputElem = document.getElementById("eta")
+                inputElem.disabled = false;
+ 
 		var maxFreq = {{mRate}};
 		var maxFreqS = {{mRateS}};
 
 		var options={
 				downsampling : 50,
-				xmin: 0,
+				xmin: -1,
 				xmax: {{xmax}},
-				fft : false,
+                                ymin: -1,
+				ymax: {{ymax}},
 				avgT: {{avgT}},
 				ro: {{ro}},
 				eta: {{eta}},
 				b: {{b}},
 				L: {{L}},
-				simul: false
+                                play: {{play}},
+                                pause: {{pause}},
+                                autoScale: {{autoScale}},
+                                fit: {{fit}},
+                                fitmin: -1,
+                                fitmax: -1,
+				simul: {{simul}},
+                                fft: {{fft}},
+		                selection: { mode: null }
 				};
 
 		var Q = {{Q}};		
@@ -262,6 +315,8 @@
 		var niR = {{niR}};
 		var xmaxS = {{xmaxS}};
 		var xmax2 = {{xmax}};
+		var ymaxS = {{ymaxS}};
+		var ymax2 = {{ymax}};
 		
 	</script>
     

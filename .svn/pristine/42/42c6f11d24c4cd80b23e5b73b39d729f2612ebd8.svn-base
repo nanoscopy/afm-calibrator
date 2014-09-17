@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>kWebCalib</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="static/css/bootstrap.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="static/css/bootstrap.css" type="text/css"/>
+
+
+  </head>
+  <body>
+  
+  	<div class="container">
+		<div class="row">
+			<div class="col-sm-8">
+		 		<h1><span class ="label label-primary">{{title}}</span></h1>
+			</div>
+
+			<div class="col-sm-4" style="margin-top:20px">
+		 		
+		 		<a class="btn btn-danger pull-right"
+		 			href="javascript:void(0)"
+		 			onclick="closeWS()"
+		 			>
+		 			<span class="glyphicon glyphicon-pause" id="pause">
+		 				
+		 			</span>
+		 		</a>
+		 		<a class="btn btn-success pull-right"
+		 			href="javascript:void(0)"
+		 			onclick="openWS()"
+		 			>
+		 			<span class="glyphicon glyphicon-play" id="play">
+		 				
+		 			</span>
+ 		 		</a>                                   
+                                <a class="radio">
+                                <input type="radio" name="autoScale" id="autoScaleOn" value="On">Auto Scale<br>
+                                <input type="radio" name="autoScale" id="zoomOn" value="Off">Zoom<br>        
+                                <input type="radio" name="autoScale" id="fitOn" value="Off">Fit<br>        
+                                </a>
+		 		
+			</div>
+			
+		</div>
+		<div class="row">
+			<div id="flot"
+				style="width: 100%;height: 400px">
+				</div>
+		</div>
+		<div class = "row">
+			<div class="col-sm-6">
+				<h3 style="text-align:center;"><span class ="label label-warning">Settings</span></h3>
+			</div>
+			<div class="col-sm-3">
+			</div>
+			<div class="col-sm-3">
+				<h3 style="text-align:center;"><span class ="label label-primary">Outputs</span></h3>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-3">
+				<h4><span class ="label label-warning">Y-axis minimum</span></h4>
+			</div>
+			<div class="col-sm-3">
+				<h4><span class ="label label-warning">Y-axis maximum</span></h4>
+			</div>
+			<div class="col-sm-3">
+
+			</div>
+			<div class="col-sm-3">
+				<h4><span class ="label label-primary">Elastic Constant[N/m]</span></h4>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-3">
+				<div class ="input-group">
+					<span class="input-group-addon">Ymin</span>
+					<input type="text" id="Ymin" class ="form-control">
+				</div>
+			</div>
+
+			<div class="col-sm-3">
+				<div class ="input-group">
+					<span class="input-group-addon">Ymax</span>
+					<input type="text" id="Ymax" class ="form-control">
+				</div>			
+			</div>
+
+			<div class="col-sm-3">
+				
+			</div>
+			<div class="col-sm-3">
+				<div class ="input-group">
+					<span class="input-group-addon">kc</span>
+					<input type="text" id="kCalc" class ="form-control">
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-3">
+				<h4><span class ="label label-warning">Downsampling</span></h4>
+			</div>
+			<div class="col-sm-3">
+				<h4><span class ="label label-warning">FFT</span></h4>
+			</div>
+			<div class="col-sm-3">
+			</div>
+			<div class="col-sm-3">
+				<h4><span class ="label label-primary">Q factor</span></h4>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-3">
+				<input type="text" id="downsampling" class ="form-control">
+			</div>
+
+			<div class="col-sm-3">
+				<input type="checkbox" id="fft">			
+			</div>
+
+			<div class="col-sm-3">
+				
+			</div>
+			<div class="col-sm-3">
+				<div class ="input-group">
+					<span class="input-group-addon">Q</span>
+					<input type="text" id="Qfact" class ="form-control">
+				</div>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-3">
+				<h4><span class ="label label-warning">FFT average time [s]</span></h4>
+			</div>
+			<div class="col-sm-3">
+				<h4><span class ="label label-warning">Simulate</span></h4>
+			</div>
+			<div class="col-sm-3">
+			</div>
+			<div class="col-sm-3">
+				<h4><span class ="label label-primary">Res. freq [Hz]</span></h4>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-3">
+				<div class ="input-group">
+					<span class="input-group-addon">Avg</span>
+					<input type="text" id="avgTime" class ="form-control">
+				</div>
+			</div>
+				
+			<div class="col-sm-3">
+				<input type="checkbox" id="simul">
+			</div>
+			
+			<div class="col-sm-3">
+				
+			</div>
+			
+			<div class="col-sm-3">
+				<div class ="input-group">
+					<span class="input-group-addon">&nu;R</span>
+					<input type="text" id="niR" class ="form-control">
+				</div>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-3">
+				<h4><span class ="label label-warning">Width [&#956;m]</span></h4>
+			</div>
+			<div class="col-sm-3">
+				<h4><span class ="label label-warning">Length [&#956;m]</span></h4>
+			</div>
+			<div class="col-sm-3">
+
+			</div>
+			<div class="col-sm-3">
+				
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-3">
+				<div class ="input-group">
+					<span class="input-group-addon">b</span>
+					<input type="text" id="b" class ="form-control">
+				</div>
+			</div>
+
+			<div class="col-sm-3">
+				<div class ="input-group">
+					<span class="input-group-addon">L</span>
+					<input type="text" id="L" class ="form-control">
+				</div>			
+			</div>
+
+			<div class="col-sm-3">
+				
+			</div>
+			<div class="col-sm-3">
+				
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-3">
+				<h4><span class ="label label-warning">Medium density [Kg/m^3]</span></h4>
+			</div>
+			<div class="col-sm-3">
+				<h4><span class ="label label-warning">Medium viscosity [10^-5 Kg /(m s)]</span></h4>
+			</div>
+			<div class="col-sm-3">
+				
+			</div>
+			<div class="col-sm-3">
+				
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-3">
+				<div class ="input-group">
+					<span class="input-group-addon">&rho;</span>
+					<input type="text" id="ro" class ="form-control">
+				</div>
+			</div>
+
+			<div class="col-sm-3">
+				<div class ="input-group">
+					<span class="input-group-addon">&eta;</span>
+					<input type="text" id="eta" class ="form-control">
+				</div>			
+			</div>
+			<div class="col-sm-3">
+				
+			</div>
+			<div class="col-sm-3">
+				
+			</div>
+		</div>
+
+  	</div>
+  	
+  	<script>           
+		var d1 = {{data}};
+                var simul = {{simul}};
+                var fft = {{fft}};
+                var play = {{play}};
+                var pause = {{pause}};
+                var autoScale = {{autoScale}};
+                var fit = {{fit}};
+                
+                elem = document.getElementById("simul");
+                elem.checked = (simul == 0) ? false : true;
+                elem = document.getElementById("fft");
+                elem.checked = (fft == 0) ? false : true;
+                
+                zoomOnElem = document.getElementById("zoomOn")
+                autoScaleOnElem = document.getElementById("autoScaleOn")
+                fitOnElem = document.getElementById("fitOn")
+    
+                autoScale = true
+                zoomOnElem.checked = false;
+                autoScaleOnElem.checked = true;
+                fitOnElem.checked = false;
+                fitOnElem.disabled = true;
+                
+                inputElem = document.getElementById("downsampling")
+                inputElem.disabled = false;
+                inputElem = document.getElementById("avgTime")
+                inputElem.disabled = false;
+                inputElem = document.getElementById("b")
+                inputElem.disabled = false;
+                inputElem = document.getElementById("L")
+                inputElem.disabled = false;
+                inputElem = document.getElementById("ro")
+                inputElem.disabled = false;
+                inputElem = document.getElementById("eta")
+                inputElem.disabled = false;
+ 
+		var maxFreq = {{mRate}};
+		var maxFreqS = {{mRateS}};
+
+		var options={
+				downsampling : 50,
+				xmin: -1,
+				xmax: {{xmax}},
+                                ymin: -1,
+				ymax: {{ymax}},
+				avgT: {{avgT}},
+				ro: {{ro}},
+				eta: {{eta}},
+				b: {{b}},
+				L: {{L}},
+                                play: {{play}},
+                                pause: {{pause}},
+                                autoScale: {{autoScale}},
+                                fit: {{fit}},
+                                fitmin: -1,
+                                fitmax: -1,
+				simul: {{simul}},
+                                fft: {{fft}},
+		                selection: { mode: null }
+				};
+
+		var Q = {{Q}};		
+		var kc = {{kc}};
+		var niR = {{niR}};
+		var xmaxS = {{xmaxS}};
+		var xmax2 = {{xmax}};
+		var ymaxS = {{ymaxS}};
+		var ymax2 = {{ymax}};
+		
+	</script>
+    
+    <script src="/static/js/jquery-1.10.2.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/flot/jquery.flot.min.js"></script>
+    <script src="/static/flot/jquery.flot.navigate.min.js"></script>
+    <script src="/static/flot/jquery.flot.selection.min.js"></script>
+    <script src="/static/js/underscore-min.js"></script>
+    <script src="/static/js/app.js"></script>
+  </body>
+</html>

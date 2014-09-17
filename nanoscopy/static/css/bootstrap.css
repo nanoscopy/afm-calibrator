@@ -2166,6 +2166,22 @@ fieldset[disabled] .btn-warning.active {
   border-color: #d43f3a;
 }
 
+.btn-actions {
+  color: #ffffff;
+  background-color: #33cc29;
+  border-color: #23c119;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 500;
+  line-height: 1.1;
+  font-weight: bold;
+}
+
+.btn-danger2 {
+  color: #ffffff;
+  background-color: #00ff00;
+  border-color: #00ff00;
+}
+
 .btn-danger:hover,
 .btn-danger:focus,
 .btn-danger:active,
@@ -4861,6 +4877,10 @@ textarea.input-group-sm > .input-group-btn > .btn {
   background-color: #f0ad4e;
 }
 
+.label-actions {
+  background-color: #33cc29;
+}
+
 .label-warning[href]:hover,
 .label-warning[href]:focus {
   background-color: #ec971f;
@@ -6207,6 +6227,10 @@ body.modal-open,
 
 .pull-left {
   float: left !important;
+}
+
+.pull-center {
+  float: center !important;
 }
 
 .hide {
