@@ -10,7 +10,7 @@ divC = 1
 
 CHUNK = 2**12
 FORMAT = pyaudio.paInt16
-CHANNELS = 1
+CHANNELS = 2
 RATE = 44100
 
 conditionOn = False

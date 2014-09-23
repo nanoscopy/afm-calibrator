@@ -33,6 +33,8 @@ class SocketHandler(websocket.WebSocketHandler):
 
         mioNI = NI if dad=='real' else NIs
         mioR = r if dad=='real' else rs
+        
+        print 'fit'
 
         try:
             #print 'Starting FIT ', self.fitmin, ' ', self.fitmax
@@ -51,6 +53,7 @@ class SocketHandler(websocket.WebSocketHandler):
         
         return Q,niR,kcCalc,[list(a) for a in zip(mioR[self.fitmin:self.fitmax:self.downsampling],data2)]
     
+    '''
     def data_listener(self, data):
         global ar
         if not self.working:
@@ -104,7 +107,78 @@ class SocketHandler(websocket.WebSocketHandler):
             
         else:
             return
-        
+    '''
+
+
+    def data_listener(self, data):
+        global ar
+        global r, rs
+
+        if not self.working:
+            
+            self.working = True
+            if self.fft:
+                data = abs(fft(data))**2
+                self.dataSum += data
+                self.acqCount += 1
+                self.drawFFT = False
+                data = self.dataSum/self.acqCount
+                data = data[0:len(data)/2]
+                if (self.acqCount >= self.acqCountMax) and (self.xmin==0 and self.xmax==ar.CHUNK*2):
+                    #print 'RESETTING to zero'
+                    self.acqCount = 0
+                    self.dataSum = np.zeros(ar.CHUNK*ar.CHANNELS)+0.0001
+                    self.drawFFT = True
+                print(self.acqCount),
+                sys.stdout.flush()
+
+            if (self.xmin>0 or self.xmax<ar.CHUNK*ar.CHANNELS) and (self.acqCount >= self.acqCountMax):
+                print 'Plotting FFT'
+                self.d2 = []
+                if self.fit:
+                    self.Q,self.niR,self.kc,self.d2 = self.work_on_d(data,'real')
+                self.drawFFT = True
+                self.acqCount = 0
+                self.dataSum = np.zeros(ar.CHUNK*ar.CHANNELS)+0.0001
+            
+            if self.downsampling > 1:
+                data = data[::self.downsampling]
+            
+            d = [[list(a) for a in zip(r[::self.downsampling],data)]]
+            
+            if self.d2:
+                d.append(self.d2)
+                
+            if self.autoScale and not self.fit:
+                xdatamin = 0
+                xdatamax = len(data) * self.downsampling
+                ydatamin = min(data)
+                ydatamax = max(data)
+            else:
+                if (self.fft):
+                    xdatamin = self.xmin
+                    xdatamax = self.xmax
+                else:
+                    xdatamin = self.xmin/2
+                    range = (self.xmax - self.xmin)/2
+                    xdatamax = xdatamin + range
+                ydatamin = self.ymin
+                ydatamax = self.ymax
+#
+            message = {'draw': self.drawFFT,'Q': self.Q, 'niR':self.niR,'kc':self.kc,'data':d, 'xmin':xdatamin, 'xmax':xdatamax, 'ymin':ydatamin, 'ymax':ydatamax}
+            
+            try:  
+                self.write_message(message)
+            except Exception, e:
+              #  print e.args
+              #  print e.message
+                return
+            self.working = False
+            
+        else:
+            return
+
+       
     def data_listener_sim(self, data):
         global ar
         global r, rs
@@ -182,6 +256,7 @@ class SocketHandler(websocket.WebSocketHandler):
         else:
             self.setParameters(message)
 
+
     def open(self):
         global ar
 
@@ -238,25 +313,39 @@ class SocketHandler(websocket.WebSocketHandler):
             self.acqCount = 0
             self.dataSum = []
             self.xmin = 0
-            del ar.listeners[:]
             if options['simul']:
+                del ar.listeners[:]
                 ar.simulListeners.append(self.data_listener_sim)
                 self.dataSum = np.zeros(ar.CHUNKs)+0.0001
                 self.acqCountMax = ar.RATEs/ar.CHUNKs*self.avgT
                 self.xmax = ar.CHUNKs*2
             else:
+                del ar.simulListeners[:]
                 ar.listeners.append(self.data_listener)
-                self.dataSum = np.zeros(ar.CHUNK/2)+0.0001
+                self.dataSum = np.zeros(ar.CHUNK*ar.CHANNELS)+0.0001
+                
+                print np.shape(self.dataSum)
+                
                 self.acqCountMax = ar.RATE/ar.CHUNK*self.avgT
                 self.xmax = ar.CHUNK*2
 
         self.simul = options['simul']
         if self.simul:
             self.acqCountMax = ar.RATEs/ar.CHUNKs*self.avgT
+            if ar.simulListeners == [] and ar.listeners == []:
+                ar.simulListeners.append(self.data_listener_sim)
+                self.dataSum = np.zeros(ar.CHUNKs)+0.0001
+                self.acqCountMax = ar.RATEs/ar.CHUNKs*self.avgT
+                self.xmax = ar.CHUNKs*2
         else:
             self.acqCountMax = ar.RATE/ar.CHUNK*self.avgT
+            if ar.simulListeners == [] and ar.listeners == []:
+                ar.listeners.append(self.data_listener)
+                self.dataSum = np.zeros(ar.CHUNK*ar.CHANNELS)+0.0001
+                self.acqCountMax = ar.RATE/ar.CHUNK*self.avgT
+                self.xmax = ar.CHUNK*2
             
-        if self.xmin == 0 and self.xmax == ar.CHUNKs*2:
+        if self.xmin == 0 and self.xmax == ar.CHUNKs*2 if self.simul else ar.CHUNK*2:
             self.d2 = []
             self.kc = 0
             self.niR = 0
@@ -270,6 +359,7 @@ class SocketHandler(websocket.WebSocketHandler):
             ar.simulListeners.remove(ls)
         self.play = 1
         self.pause = 0
+
 
 class MainHandler(tornado.web.RequestHandler):
     
@@ -301,6 +391,7 @@ class MainHandler(tornado.web.RequestHandler):
                     b=bP*1e+6,
                     L=LP*1e+6)
 
+
 def start():
     global r, rs
     global ar
@@ -326,6 +417,7 @@ def start():
     ar.start()
     ar.play()
     tornado.ioloop.IOLoop.instance().start()
+
 
 def stop():
     global ar
