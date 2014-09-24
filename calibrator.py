@@ -1,6 +1,7 @@
 import os.path
 #!/usr/bin/python
 import os
+import webbrowser as web
 
 try:
     import numpy, scipy, pyaudio, tornado
@@ -29,6 +30,12 @@ except:
     pass      
 
 threading.Thread(target=tornado_server.start).start()
+
+try:
+    if sys.argv[3] == 'debug':
+        web.open('http://localhost:'+str(tornado_server.port))
+except:
+    pass
 
 if platform.system()=='Windows':
     

@@ -33,8 +33,6 @@ class SocketHandler(websocket.WebSocketHandler):
 
         mioNI = NI if dad=='real' else NIs
         mioR = r if dad=='real' else rs
-        
-        print 'fit'
 
         try:
             #print 'Starting FIT ', self.fitmin, ' ', self.fitmax
@@ -129,7 +127,6 @@ class SocketHandler(websocket.WebSocketHandler):
                     self.acqCount = 0
                     self.dataSum = np.zeros(ar.CHUNK*ar.CHANNELS)+0.0001
                     self.drawFFT = True
-                print(self.acqCount),
                 sys.stdout.flush()
 
             if (self.xmin>0 or self.xmax<ar.CHUNK*ar.CHANNELS) and (self.acqCount >= self.acqCountMax):
@@ -198,7 +195,6 @@ class SocketHandler(websocket.WebSocketHandler):
                     self.acqCount = 0
                     self.dataSum = np.zeros(ar.CHUNKs)+0.0001
                     self.drawFFT = True
-                print(self.acqCount),
                 sys.stdout.flush()
 
             if (self.xmin>0 or self.xmax<ar.CHUNKs*2) and (self.acqCount >= self.acqCountMax):
@@ -323,8 +319,6 @@ class SocketHandler(websocket.WebSocketHandler):
                 del ar.simulListeners[:]
                 ar.listeners.append(self.data_listener)
                 self.dataSum = np.zeros(ar.CHUNK*ar.CHANNELS)+0.0001
-                
-                print np.shape(self.dataSum)
                 
                 self.acqCountMax = ar.RATE/ar.CHUNK*self.avgT
                 self.xmax = ar.CHUNK*2
