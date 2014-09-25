@@ -46,8 +46,8 @@ function openWS(){
             msg = JSON.parse(evt.data);
             xmin = msg.xmin;
             xmax = msg.xmax;
-            options.xmin = msg.xmin*2;
-            options.xmax = msg.xmax*2;
+            options.xmin = msg.xmin;
+            options.xmax = msg.xmax;
             
             if (newWs)
             {
@@ -68,9 +68,8 @@ function openWS(){
                     ymin = parseFloat(ymin);
                     ymax = parseFloat(ymax);
                 }
-                var corr = fmax/(xmax/4); //il fattore ha 'dimensioni' frequenza/indice
+                var corr = fmax/(xmax); //il fattore ha 'dimensioni' frequenza/indice
                                           // factor has 'size' Frequency / Index
-                corr = 1;
 
                 if(msg.draw)
                 {
@@ -112,14 +111,18 @@ function openWS(){
                     ymin = parseFloat(ymin);
                     ymax = parseFloat(ymax);
                 }
-                var xstep = (xmax - xmin) / 5;
+                var xstep = xmax/fmax; //(xmax/ - xmin) / 5;
                 var ystep = (ymax - ymin) / 5;
-                po.xaxes[0].ticks = [xmin, xmin+xstep, xmin+2*xstep, xmin+3*xstep, xmin+4*xstep, xmax];
+                
+                po.xaxes[0].ticks = [[0,0],[400,roundMe(xstep/10,2)],[800,roundMe(2*xstep/10,2)],[1200,roundMe(3*xstep/10,2)],[1600,roundMe(4*xstep/10,2)],
+                [2000,roundMe(5*xstep/10,2)],[2400,roundMe(6*xstep/10,2)],[2800,roundMe(7*xstep/10,2)],[3200,roundMe(8*xstep/10,2)],
+                [3600,roundMe(9*xstep/10,2)],[4000,roundMe(xstep,2)]]; //[xmin, xmin+xstep, xmin+2*xstep, xmin+3*xstep, xmin+4*xstep, xmax];
                 po.yaxes[0].ticks = [ymin, ymin+ystep, ymin+2*ystep, ymin+3*ystep, ymin+4*ystep, ymax];
                 po.yaxes[0].min = ymin;
                 po.yaxes[0].max = ymax;
-                po.xaxes[0].min = xmin;
+                po.xaxes[0].min = 0;
                 po.xaxes[0].max = xmax;
+               
                 
                 plot.setData(msg.data);
                 plot.setupGrid();

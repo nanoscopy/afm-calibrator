@@ -50,62 +50,6 @@ class SocketHandler(websocket.WebSocketHandler):
             Q = 'Nan'
         
         return Q,niR,kcCalc,[list(a) for a in zip(mioR[self.fitmin:self.fitmax:self.downsampling],data2)]
-    
-    '''
-    def data_listener(self, data):
-        global ar
-        if not self.working:
-            self.working = True
-            data = data[0::2]
-            if self.fft:
-                data = abs(fft(data))**2
-                self.dataSum += data
-                self.acqCount += 1
-                self.drawFFT = False
-                data = self.dataSum/self.acqCount
-                data = data[0:len(data)/2]
-                if (self.acqCount >= self.acqCountMax) and (self.xmin==0 and self.xmax==ar.CHUNK*2):
-                    self.acqCount = 0
-                    self.dataSum = np.zeros(ar.CHUNK/2)+0.0001
-                    self.drawFFT = True
-    
-            if (self.xmin>0 or self.xmax<ar.CHUNK*2) and self.acqCount >= self.acqCountMax:
-                self.d2 = []
-                self.Q,self.niR,self.kc,self.d2 = self.work_on_d(data,'real') # here the server calls the function that performs the data fitting and also caluclates the elastic constant k
-                self.drawFFT = True
-                self.acqCount = 0
-                self.dataSum = np.zeros(ar.CHUNK/2)+0.0001
-            
-            if self.downsampling > 1:
-                data = data[::self.downsampling]
-            
-            d = [[list(a) for a in zip(r[::self.downsampling],data)]]
-            
-            if self.d2:
-                d.append(self.d2)
-            
-            if self.autoScale:
-                xdatamin = 0
-                xdatamax = len(data)/2
-            else:
-                xdatamin = self.xmin/2
-                xdatamax = xdatamin + (self.xmax - self.xmin)/2
-                
-            message = {'draw': self.drawFFT,'Q': self.Q, 'niR':self.niR,'kc':self.kc,'data':d, 'xmin':xdatamin, 'xmax':xdatamax}
-            
-            try:  
-                self.write_message(message)
-            except Exception, e:
-                
-              #  print e..gs
-              #  print e.message
-                
-                return
-            self.working = False
-            
-        else:
-            return
-    '''
 
 
     def data_listener(self, data):
@@ -364,12 +308,12 @@ class MainHandler(tornado.web.RequestHandler):
         self.render("html/index.html", 
                     title="AFM-Calibrator V" + version, 
                     data = data,
-                    xmax = 1,
+                    xmax = ar.CHUNK*ar.CHANNELS,
                     ymax = 1,
                     xmaxS = 1,
                     ymaxS = 1,
-                    mRate = 100,
-                    mRateS = 100,
+                    mRate = 22050,
+                    mRateS = 20000,
                     play = 1,
                     pause = 0,
                     autoScale = 0,
