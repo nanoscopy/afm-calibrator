@@ -114,9 +114,11 @@ function openWS(){
                 var xstep = xmax/fmax; //(xmax/ - xmin) / 5;
                 var ystep = (ymax - ymin) / 5;
                 
-                po.xaxes[0].ticks = [[0,0],[400,roundMe(xstep/10,2)],[800,roundMe(2*xstep/10,2)],[1200,roundMe(3*xstep/10,2)],[1600,roundMe(4*xstep/10,2)],
-                [2000,roundMe(5*xstep/10,2)],[2400,roundMe(6*xstep/10,2)],[2800,roundMe(7*xstep/10,2)],[3200,roundMe(8*xstep/10,2)],
-                [3600,roundMe(9*xstep/10,2)],[4000,roundMe(xstep,2)]]; //[xmin, xmin+xstep, xmin+2*xstep, xmin+3*xstep, xmin+4*xstep, xmax];
+                var tickstep = xmax/10;
+                
+                po.xaxes[0].ticks = [[0,0],[tickstep,roundMe(xstep/10,2)],[tickstep*2,roundMe(2*xstep/10,2)],[tickstep*3,roundMe(3*xstep/10,2)],[tickstep*4,roundMe(4*xstep/10,2)],
+                [tickstep*5,roundMe(5*xstep/10,2)],[tickstep*6,roundMe(6*xstep/10,2)],[tickstep*7,roundMe(7*xstep/10,2)],[tickstep*8,roundMe(8*xstep/10,2)],
+                [tickstep*9,roundMe(9*xstep/10,2)],[tickstep*10,roundMe(xstep,2)]]; //[xmin, xmin+xstep, xmin+2*xstep, xmin+3*xstep, xmin+4*xstep, xmax];
                 po.yaxes[0].ticks = [ymin, ymin+ystep, ymin+2*ystep, ymin+3*ystep, ymin+4*ystep, ymax];
                 po.yaxes[0].min = ymin;
                 po.yaxes[0].max = ymax;
