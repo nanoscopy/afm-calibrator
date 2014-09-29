@@ -40,9 +40,10 @@ function mioLog(valore){
 function openWS(){
     if (ws === null)
     {
-	ws = new WebSocket("ws://"+window.location.host+"/ws");
-   
-	ws.onmessage = _.throttle(function (evt) {
+        ws = new WebSocket("ws://"+window.location.host+"/ws");
+        
+        ws.onmessage = _.throttle(function (evt) 
+        {
             msg = JSON.parse(evt.data);
             xmin = msg.xmin;
             xmax = msg.xmax;
@@ -124,8 +125,6 @@ function openWS(){
                 po.yaxes[0].max = ymax;
                 po.xaxes[0].min = 0;
                 po.xaxes[0].max = xmax;
-               
-                
                 plot.setData(msg.data);
                 plot.setupGrid();
                 plot.draw();
@@ -133,13 +132,13 @@ function openWS(){
             $('#kCalc').val(msg.kc);
             $('#niR').val(msg.niR);
             $('#Qfact').val(msg.Q);
-	},100);
+        },100);
         ws.onopen = function()
         {
-            if (options.fft)
-            {
-                enableInputs(false);
-            }
+	       if (options.fft)
+	       {
+	           enableInputs(false);
+	       }
            // Web Socket is connected, send data using send()
            ws.send(JSON.stringify(options));
         };
@@ -163,16 +162,15 @@ $('#flot').bind("plotselected",
         }
         else
         {
-            options.xmin = parseInt(ranges.xaxis.from)*2;
-            options.xmax = parseInt(ranges.xaxis.to)*2;
+            //options.xmin = parseInt(ranges.xaxis.from)*2;
+            //options.xmax = parseInt(ranges.xaxis.to)*2;
             if (!options.autoScale)
             {
                $('#Ymin').val(parseFloat(ranges.yaxis.from).toPrecision(3));
                $('#Ymax').val(parseFloat(ranges.yaxis.to).toPrecision(3));
             }
         }
-        if (ws)
-            ws.send(JSON.stringify(options));
+        if (ws) ws.send(JSON.stringify(options));
     }
 );
 
@@ -183,8 +181,7 @@ $('#flot').bind("plotunselected",
         options.xmax = xmax;
         options.ymin = ymin;
         options.ymax = ymax;
-        if (ws)
-            ws.send(JSON.stringify(options));
+        if (ws) ws.send(JSON.stringify(options));
     }
 );
 
@@ -192,36 +189,33 @@ var plot = $.plot("#flot", [d1], {
 		xaxis: {transform:  function(v) {
 					if ($('#fft').is(':checked')) return mioLog(v+0.001);
 					else return v;
-				} ,
+				},
 				inverseTransform:  function(v) {
 					if ($('#fft').is(':checked')) return Math.pow(10,v);
 					else return v;
-				} , 
-				tickDecimals: 2 ,
+				}, 
+				tickDecimals: 2,
 				//scale: 0.15 ,
 				tickFormatter: function (v, axis) {
 					if ($('#fft').is(':checked')) return "10" + (Math.round(mioLog(v))).toPrecision(3).toString().sup();
 					else return v.toPrecision(3);
 				}
-			},
-		selection: {
-                                mode: "xy"
-			},
+		},
+		selection: {mode: "xy"},
 		yaxis: {transform:  function(v) {
 					if ($('#fft').is(':checked')) return mioLog(v);
 					else return v;
-				} ,
+				},
 				inverseTransform:  function(v) {
 					if ($('#fft').is(':checked')) return Math.pow(10,v);
 					else return v;
-				} ,
-				tickDecimals: 10 ,
+				},
+				tickDecimals: 10,
 				tickFormatter: function (v, axis) {
 					if ($('#fft').is(':checked')) return "10" + (Math.round( mioLog(v))).toPrecision(3).toString().sup();
 					else return v.toPrecision(3);
 				}
-			},
-		
+		},
 		points: {show: false, radius: 1},
 		lines: {show: true},
 		shadowSize: 0
@@ -229,11 +223,10 @@ var plot = $.plot("#flot", [d1], {
 );
 
 updateDownsampling = _.debounce(function(){
-		options.downsampling = parseInt($('#downsampling').val()) || 1;
-		if (ws)
-			ws.send(JSON.stringify(options));
-	},
-	250);
+	options.downsampling = parseInt($('#downsampling').val()) || 1;
+	if (ws) ws.send(JSON.stringify(options));
+	},250
+);
 
 $('#downsampling').val(options.downsampling);
 
@@ -241,10 +234,9 @@ $('#downsampling').keyup(updateDownsampling);
 
 updateRo = _.debounce(function(){
 		options.ro = parseInt($('#ro').val()) || 1;
-		if (ws)
-			ws.send(JSON.stringify(options));
-	},
-	250);
+		if (ws) ws.send(JSON.stringify(options));
+	},250
+);
 
 $('#ro').val(options.ro);
 
@@ -252,10 +244,9 @@ $('#ro').keyup(updateRo);
 
 updateEta = _.debounce(function(){
 		options.eta = parseInt($('#eta').val()) || 1;
-		if (ws)
-			ws.send(JSON.stringify(options));
-	},
-	250);
+		if (ws) ws.send(JSON.stringify(options));
+	},250
+);
 
 $('#eta').val(options.eta);
 
@@ -263,10 +254,9 @@ $('#eta').keyup(updateEta);
 
 updateB = _.debounce(function(){
 		options.b = parseInt($('#b').val()) || 1;
-		if (ws)
-			ws.send(JSON.stringify(options));
-	},
-	250);
+		if (ws) ws.send(JSON.stringify(options));
+	}, 250
+);
 
 $('#b').val(options.b);
 
@@ -274,10 +264,9 @@ $('#b').keyup(updateB);
 
 updateL = _.debounce(function(){
 		options.L = parseInt($('#L').val()) || 1;
-		if (ws)
-			ws.send(JSON.stringify(options));
-	},
-	250);
+		if (ws) ws.send(JSON.stringify(options));
+	}, 250
+);
 
 $('#L').val(options.L);
 
@@ -285,10 +274,9 @@ $('#L').keyup(updateL);
 
 updateAvgTime = _.debounce(function(){
 		options.avgT = parseFloat($('#avgTime').val()) || 1;
-		if (ws)
-			ws.send(JSON.stringify(options));
-	},
-	250);
+		if (ws) ws.send(JSON.stringify(options));
+	}, 250
+);
 
 $('#avgTime').val(options.avgT);
 
@@ -317,35 +305,33 @@ $('#simul').change(function(){
 
 $('#fft').change(function(){
 		options.fft = $('#fft').is(':checked');
-                $('#fitOn').prop('disabled', !options.fft);
+		$('#fitOn').prop('disabled', !options.fft);
 		
 		if(ws)
-                {
-                    if (options.fft)
-                    {
-                        enableInputs(false);
-                    }
-                    else
-                    {
-                        enableInputs(true);
-                    }
-                    ws.send(JSON.stringify(options));
-                }
+		{
+            if (options.fft)
+            {
+                enableInputs(false);
+            }
+            else
+            {
+                enableInputs(true);
+            }
+            ws.send(JSON.stringify(options));
+        }
 	}
  );
         
 $('#autoScaleOn').change(function(){
-                if (options.autoScale !== $('#autoScaleOn').is(':checked'))
-                {
-                    options.autoScale = $('#autoScaleOn').is(':checked');
-                    options.fit = $('#fitOn').is(':checked');
-                    options.xmin = xmin*2;
-                    options.xmax = xmax*2;
-                    mode = null;
-		
-                    if(ws)
-			ws.send(JSON.stringify(options));
-                }
+        if (options.autoScale !== $('#autoScaleOn').is(':checked'))
+        {
+            options.autoScale = $('#autoScaleOn').is(':checked');
+            options.fit = $('#fitOn').is(':checked');
+            options.xmin = xmin*2;
+            options.xmax = xmax*2;
+            mode = null;
+		  if(ws) ws.send(JSON.stringify(options));
+	    }
 	}
 );
 
@@ -362,22 +348,24 @@ $('#zoomOn').change(function(){
 );
         
 $('#fitOn').change(function(){
-                if ($('#fft').is(':checked'))
-                {
-		   options.autoScale = !$('#fitOn').is(':checked');
-                   options.fit = $('#fitOn').is(':checked');
-		
-		   if(ws)
-                      ws.send(JSON.stringify(options));
-                }
-                else if (options.autoScale)
-                {
-		   $('#autoScaleOn').checked(true);                    
-                }
-                else
-                {
-                   $('#zoomOn').checked(true);
-                }
-	}
+        if ($('#fft').is(':checked'))
+        {
+            options.autoScale = !$('#fitOn').is(':checked');
+            options.fit = $('#fitOn').is(':checked');
+            if(ws)
+            {
+                ws.send(JSON.stringify(options));
+            }
+        }
+		    
+		else if (options.autoScale)
+        {
+            $('#autoScaleOn').checked(true);
+        }
+        else
+        {
+            $('#zoomOn').checked(true);
+        }
+   }
                 
 );

@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="static/css/bootstrap.css" rel="stylesheet" media="screen">
     <link rel="stylesheet" href="static/css/bootstrap.css" type="text/css"/>
-
-
   </head>
-  <body>
   
+  <body>
   	<div class="container">
 		<div class="row">
 			<div class="col-sm-8">
@@ -17,36 +15,23 @@
 			</div>
 
 			<div class="col-sm-4" style="margin-top:20px">
-		 		
-		 		<a class="btn btn-danger pull-right"
-		 			href="javascript:void(0)"
-		 			onclick="closeWS()"
-		 			>
-		 			<span class="glyphicon glyphicon-pause" id="pause">
-		 				
-		 			</span>
+		 		<a class="btn btn-danger pull-right" href="javascript:void(0)" onclick="closeWS()">
+		 			<span class="glyphicon glyphicon-pause" id="pause"></span>
 		 		</a>
-		 		<a class="btn btn-success pull-right"
-		 			href="javascript:void(0)"
-		 			onclick="openWS()"
-		 			>
-		 			<span class="glyphicon glyphicon-play" id="play">
-		 				
-		 			</span>
+		 		<a class="btn btn-success pull-right" href="javascript:void(0)" onclick="openWS()">
+		 			<span class="glyphicon glyphicon-play" id="play"></span>
  		 		</a>                                   
-                                <a class="radio">
-                                <input type="radio" name="autoScale" id="autoScaleOn" value="On">Auto Scale<br>
-                                <input type="radio" name="autoScale" id="zoomOn" value="Off">Zoom<br>        
-                                <input type="radio" name="autoScale" id="fitOn" value="Off">Fit<br>        
-                                </a>
+ 		 		<a class="radio">
+ 		 		    <input type="radio" name="autoScale" id="autoScaleOn" value="On">Auto Scale<br>
+ 		 		    <input type="radio" name="autoScale" id="zoomOn" value="Off">Zoom<br>        
+ 		 		    <input type="radio" name="autoScale" id="fitOn" value="Off">Fit<br>        
+ 		 	    </a>
 		 		
 			</div>
 			
 		</div>
 		<div class="row">
-			<div id="flot"
-				style="width: 100%;height: 400px">
-				</div>
+			<div id="flot" style="width: 100%;height: 400px"></div>
 		</div>
 		<div class = "row">
 			<div class="col-sm-6">
@@ -66,9 +51,7 @@
 			<div class="col-sm-3">
 				<h4><span class ="label label-warning">Y-axis maximum</span></h4>
 			</div>
-			<div class="col-sm-3">
-
-			</div>
+			<div class="col-sm-3"></div>
 			<div class="col-sm-3">
 				<h4><span class ="label label-primary">Elastic Constant[N/m]</span></h4>
 			</div>
@@ -89,9 +72,7 @@
 				</div>			
 			</div>
 
-			<div class="col-sm-3">
-				
-			</div>
+			<div class="col-sm-3"></div>
 			<div class="col-sm-3">
 				<div class ="input-group">
 					<span class="input-group-addon">kc</span>
@@ -107,8 +88,7 @@
 			<div class="col-sm-3">
 				<h4><span class ="label label-warning">FFT</span></h4>
 			</div>
-			<div class="col-sm-3">
-			</div>
+			<div class="col-sm-3"></div>
 			<div class="col-sm-3">
 				<h4><span class ="label label-primary">Q factor</span></h4>
 			</div>
@@ -123,9 +103,7 @@
 				<input type="checkbox" id="fft">			
 			</div>
 
-			<div class="col-sm-3">
-				
-			</div>
+			<div class="col-sm-3"></div>
 			<div class="col-sm-3">
 				<div class ="input-group">
 					<span class="input-group-addon">Q</span>
@@ -141,8 +119,7 @@
 			<div class="col-sm-3">
 				<h4><span class ="label label-warning">Simulate</span></h4>
 			</div>
-			<div class="col-sm-3">
-			</div>
+			<div class="col-sm-3"></div>
 			<div class="col-sm-3">
 				<h4><span class ="label label-primary">Res. freq [Hz]</span></h4>
 			</div>
@@ -179,12 +156,8 @@
 			<div class="col-sm-3">
 				<h4><span class ="label label-warning">Length [&#956;m]</span></h4>
 			</div>
-			<div class="col-sm-3">
-
-			</div>
-			<div class="col-sm-3">
-				
-			</div>
+			<div class="col-sm-3"></div>
+			<div class="col-sm-3"></div>
 		</div>
 
 		<div class="row">
@@ -202,12 +175,8 @@
 				</div>			
 			</div>
 
-			<div class="col-sm-3">
-				
-			</div>
-			<div class="col-sm-3">
-				
-			</div>
+			<div class="col-sm-3"></div>
+			<div class="col-sm-3"></div>
 		</div>
 		<div class="row">
 			<div class="col-sm-3">
@@ -216,12 +185,8 @@
 			<div class="col-sm-3">
 				<h4><span class ="label label-warning">Medium viscosity [10^-5 Kg /(m s)]</span></h4>
 			</div>
-			<div class="col-sm-3">
-				
-			</div>
-			<div class="col-sm-3">
-				
-			</div>
+			<div class="col-sm-3"></div>
+			<div class="col-sm-3"></div>
 		</div>
 		
 		<div class="row">
@@ -238,52 +203,48 @@
 					<input type="text" id="eta" class ="form-control">
 				</div>			
 			</div>
-			<div class="col-sm-3">
-				
-			</div>
-			<div class="col-sm-3">
-				
-			</div>
+			<div class="col-sm-3"></div>
+			<div class="col-sm-3"></div>
 		</div>
 
   	</div>
   	
   	<script>           
 		var d1 = {{data}};
-                var simul = {{simul}};
-                var fft = {{fft}};
-                var play = {{play}};
-                var pause = {{pause}};
-                var autoScale = {{autoScale}};
-                var fit = {{fit}};
-                
-                elem = document.getElementById("simul");
-                elem.checked = (simul == 0) ? false : true;
-                elem = document.getElementById("fft");
-                elem.checked = (fft == 0) ? false : true;
-                
-                zoomOnElem = document.getElementById("zoomOn")
-                autoScaleOnElem = document.getElementById("autoScaleOn")
-                fitOnElem = document.getElementById("fitOn")
-    
-                autoScale = true
-                zoomOnElem.checked = false;
-                autoScaleOnElem.checked = true;
-                fitOnElem.checked = false;
-                fitOnElem.disabled = true;
-                
-                inputElem = document.getElementById("downsampling")
-                inputElem.disabled = false;
-                inputElem = document.getElementById("avgTime")
-                inputElem.disabled = false;
-                inputElem = document.getElementById("b")
-                inputElem.disabled = false;
-                inputElem = document.getElementById("L")
-                inputElem.disabled = false;
-                inputElem = document.getElementById("ro")
-                inputElem.disabled = false;
-                inputElem = document.getElementById("eta")
-                inputElem.disabled = false;
+        var simul = {{simul}};
+        var fft = {{fft}};
+        var play = {{play}};
+        var pause = {{pause}};
+        var autoScale = {{autoScale}};
+        var fit = {{fit}};
+        
+        elem = document.getElementById("simul");
+        elem.checked = (simul == 0) ? false : true;
+        elem = document.getElementById("fft");
+        elem.checked = (fft == 0) ? false : true;
+        
+        zoomOnElem = document.getElementById("zoomOn");
+        autoScaleOnElem = document.getElementById("autoScaleOn");
+        fitOnElem = document.getElementById("fitOn");
+        
+        autoScale = true;
+        zoomOnElem.checked = false;
+        autoScaleOnElem.checked = true;
+        fitOnElem.checked = false;
+        fitOnElem.disabled = true;
+        
+        inputElem = document.getElementById("downsampling");
+        inputElem.disabled = false;
+        inputElem = document.getElementById("avgTime");
+        inputElem.disabled = false;
+        inputElem = document.getElementById("b");
+        inputElem.disabled = false;
+        inputElem = document.getElementById("L");
+        inputElem.disabled = false;
+        inputElem = document.getElementById("ro");
+        inputElem.disabled = false;
+        inputElem = document.getElementById("eta");
+        inputElem.disabled = false;
  
 		var maxFreq = {{mRate}};
 		var maxFreqS = {{mRateS}};
@@ -292,22 +253,22 @@
 				downsampling : 50,
 				xmin: -1,
 				xmax: {{xmax}},
-                                ymin: -1,
+				ymin: -1,
 				ymax: {{ymax}},
 				avgT: {{avgT}},
 				ro: {{ro}},
 				eta: {{eta}},
 				b: {{b}},
 				L: {{L}},
-                                play: {{play}},
-                                pause: {{pause}},
-                                autoScale: {{autoScale}},
-                                fit: {{fit}},
-                                fitmin: -1,
-                                fitmax: -1,
+				play: {{play}},
+				pause: {{pause}},
+				autoScale: {{autoScale}},
+				fit: {{fit}},
+				fitmin: -1,
+				fitmax: -1,
 				simul: {{simul}},
-                                fft: {{fft}},
-		                selection: { mode: null }
+				fft: {{fft}},
+				selection: { mode: null }
 				};
 
 		var Q = {{Q}};		
