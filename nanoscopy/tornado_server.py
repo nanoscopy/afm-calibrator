@@ -66,7 +66,7 @@ class SocketHandler(websocket.WebSocketHandler):
                 self.drawFFT = False
                 data = self.dataSum/self.acqCount
                 data = data[0:len(data)/2]
-                if (self.acqCount >= self.acqCountMax) and (self.xmin==0 and self.xmax==ar.CHUNK*2):
+                if (self.acqCount >= self.acqCountMax) and (self.xmin==0 and self.xmax==ar.CHUNK*ar.CHANNELS):
                     #print 'RESETTING to zero'
                     self.acqCount = 0
                     self.dataSum = np.zeros(ar.CHUNK*ar.CHANNELS)+0.0001
@@ -100,7 +100,7 @@ class SocketHandler(websocket.WebSocketHandler):
                     xdatamin = self.xmin
                     xdatamax = self.xmax
                 else:
-                    xdatamin = self.xmin/2
+                    xdatamin = self.xmin
                     range = (self.xmax - self.xmin)/2
                     xdatamax = xdatamin + range
                 ydatamin = self.ymin
@@ -134,14 +134,14 @@ class SocketHandler(websocket.WebSocketHandler):
                 self.drawFFT = False
                 data = self.dataSum/self.acqCount
                 data = data[0:len(data)/2]
-                if (self.acqCount >= self.acqCountMax) and (self.xmin==0 and self.xmax==ar.CHUNKs*2):
+                if (self.acqCount >= self.acqCountMax) and (self.xmin==0 and self.xmax==ar.CHUNKs*ar.CHANNELS):
                     #print 'RESETTING to zero'
                     self.acqCount = 0
                     self.dataSum = np.zeros(ar.CHUNKs)+0.0001
                     self.drawFFT = True
                 sys.stdout.flush()
 
-            if (self.xmin>0 or self.xmax<ar.CHUNKs*2) and (self.acqCount >= self.acqCountMax):
+            if (self.xmin>0 or self.xmax<ar.CHUNKs*ar.CHANNELS) and (self.acqCount >= self.acqCountMax):
                 print 'Plotting FFT'
                 self.d2 = []
                 if self.fit:
@@ -168,7 +168,7 @@ class SocketHandler(websocket.WebSocketHandler):
                     xdatamin = self.xmin
                     xdatamax = self.xmax
                 else:
-                    xdatamin = self.xmin/2
+                    xdatamin = self.xmin
                     range = (self.xmax - self.xmin)/2
                     xdatamax = xdatamin + range
                 ydatamin = self.ymin
@@ -190,11 +190,7 @@ class SocketHandler(websocket.WebSocketHandler):
 
     def on_message(self, message):
         global ar
-        if message == "fit":
-            self.fit()
-            return
-        else:
-            self.setParameters(message)
+        self.setParameters(message)
 
 
     def open(self):
@@ -204,7 +200,7 @@ class SocketHandler(websocket.WebSocketHandler):
         self.downsampling = 50
         self.fft = False
         self.xmin = 0
-        self.xmax = ar.CHUNK*2
+        self.xmax = ar.CHUNK*ar.CHANNELS
         self.ro = kcu.roAria
         self.eta = kcu.etaAria
         self.avgT = 2
@@ -232,16 +228,16 @@ class SocketHandler(websocket.WebSocketHandler):
         self.fitmax = options['fitmax']
         self.downsampling = options['downsampling']
         self.fft = options['fft']
+        
+        '''
         if self.fft:
-            if self.fit:
-                self.fitmin = options['fitmin']
-                self.fitmax = options['fitmax']
-            else:
-                self.xmin = options['xmin'] / 2
-                self.xmax = options['xmax'] / 2
+            self.xmin = options['xmin'] / 2
+            self.xmax = options['xmax'] / 2
         else:
             self.xmin = options['xmin']
             self.xmax = options['xmax']
+        '''
+        
         self.ymin = options['ymin']
         self.ymax = options['ymax']
         self.ro = options['ro']
@@ -258,14 +254,14 @@ class SocketHandler(websocket.WebSocketHandler):
                 ar.simulListeners.append(self.data_listener_sim)
                 self.dataSum = np.zeros(ar.CHUNKs)+0.0001
                 self.acqCountMax = ar.RATEs/ar.CHUNKs*self.avgT
-                self.xmax = ar.CHUNKs*2
+                self.xmax = ar.CHUNKs*ar.CHANNELS
             else:
                 del ar.simulListeners[:]
                 ar.listeners.append(self.data_listener)
                 self.dataSum = np.zeros(ar.CHUNK*ar.CHANNELS)+0.0001
                 
                 self.acqCountMax = ar.RATE/ar.CHUNK*self.avgT
-                self.xmax = ar.CHUNK*2
+                self.xmax = ar.CHUNK*ar.CHANNELS
 
         self.simul = options['simul']
         if self.simul:
@@ -274,16 +270,16 @@ class SocketHandler(websocket.WebSocketHandler):
                 ar.simulListeners.append(self.data_listener_sim)
                 self.dataSum = np.zeros(ar.CHUNKs)+0.0001
                 self.acqCountMax = ar.RATEs/ar.CHUNKs*self.avgT
-                self.xmax = ar.CHUNKs*2
+                self.xmax = ar.CHUNKs*ar.CHANNELS if not self.fft else ar.CHUNKs
         else:
             self.acqCountMax = ar.RATE/ar.CHUNK*self.avgT
             if ar.simulListeners == [] and ar.listeners == []:
                 ar.listeners.append(self.data_listener)
                 self.dataSum = np.zeros(ar.CHUNK*ar.CHANNELS)+0.0001
                 self.acqCountMax = ar.RATE/ar.CHUNK*self.avgT
-                self.xmax = ar.CHUNK*2
+                self.xmax = ar.CHUNK*ar.CHANNELS if not self.fft else ar.CHUNK
             
-        if self.xmin == 0 and self.xmax == ar.CHUNKs*2 if self.simul else ar.CHUNK*2:
+        if self.xmin == 0 and self.xmax == ar.CHUNKs*ar.CHANNELS if self.simul else ar.CHUNK*ar.CHANNELS:
             self.d2 = []
             self.kc = 0
             self.niR = 0
@@ -303,7 +299,7 @@ class MainHandler(tornado.web.RequestHandler):
     
     def get(self):
         global ar
-        data = [list(a) for a in zip(r,linspace(-5e+4,5e+12,ar.CHUNK*2))]
+        data = [list(a) for a in zip(r,linspace(-5e+4,5e+12,ar.CHUNK*ar.CHANNELS))]
         data = []
         self.render("html/index.html", 
                     title="AFM-Calibrator V" + version, 
@@ -337,8 +333,8 @@ def start():
     
     ar = AudioReader(dataFile = filePath+'nanoscopy'+os.sep+'FileEsempio'+os.sep+'data_25e-6_20sec_2')
 
-    r = range(ar.CHUNK*2)
-    rs = range(ar.CHUNKs*2)
+    r = range(ar.CHUNK*ar.CHANNELS)
+    rs = range(ar.CHUNKs*ar.CHANNELS)
 
     NI = kcu.buildNI(float(ar.CHUNK)/ar.RATE,1.0/ar.RATE) # Range frequenze creato apposta per le impostazioni della scheda sonora
                                                           # Frequency range created especially for the settings of the sound card

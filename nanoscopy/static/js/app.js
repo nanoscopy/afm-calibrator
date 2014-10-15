@@ -292,9 +292,9 @@ $('#simul').change(function(){
 		}
 		else
 		{
-			xmax = xmax2;
+			xmax = xmax;
 			fmax = maxFreq;
-			options.xmax = xmax2;
+			options.xmax = xmax;
 		}
 		
 		if(ws)
@@ -323,12 +323,13 @@ $('#fft').change(function(){
  );
         
 $('#autoScaleOn').change(function(){
+    console.log('autoscaleon');
         if (options.autoScale !== $('#autoScaleOn').is(':checked'))
         {
             options.autoScale = $('#autoScaleOn').is(':checked');
             options.fit = $('#fitOn').is(':checked');
-            options.xmin = xmin*2;
-            options.xmax = xmax*2;
+            options.xmin = xmin;
+            options.xmax = xmax;
             mode = null;
 		  if(ws) ws.send(JSON.stringify(options));
 	    }
@@ -336,6 +337,7 @@ $('#autoScaleOn').change(function(){
 );
 
 $('#zoomOn').change(function(){
+    console.log('zoomon');
 		if (options.autoScale !== $('#autoScaleOn').is(':checked'))
                 {
                 options.autoScale = !$('#zoomOn').is(':checked');
@@ -348,6 +350,7 @@ $('#zoomOn').change(function(){
 );
         
 $('#fitOn').change(function(){
+    console.log('fiton');
         if ($('#fft').is(':checked'))
         {
             options.autoScale = !$('#fitOn').is(':checked');
